@@ -29,7 +29,7 @@ export const render = (index: string, meta: OpenGraphTags) => {
 
     ${imageUrl ? `<meta name="twitter:image" content="${imageUrl}" />` : ''}`;
 
-  return index.replace('<!-- metadata:tags -->', tags);
+  return index.replace('<!-- metadata:tags -->', () => tags);
 };
 
 @Injectable()

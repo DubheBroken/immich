@@ -63,7 +63,7 @@ export const asUrl = (sharedLink: SharedLinkResponseDto) => {
   const path = sharedLink.slug
     ? `s/${encodeURIComponent(sharedLink.slug)}`
     : `share/${encodeURIComponent(sharedLink.key)}`;
-  return new URL(path, serverConfigManager.value.externalDomain || globalThis.location.origin).href;
+  return new URL(path, serverConfigManager.value.externalDomain || location.origin).href;
 };
 
 export const handleCreateSharedLink = async (dto: SharedLinkCreateDto) => {

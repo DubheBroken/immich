@@ -46,9 +46,6 @@ const probe = (input: string, options: string[]): Promise<FfprobeData> =>
 
 const execFile = promisify(execFileCb);
 
-sharp.concurrency(0);
-sharp.cache({ files: 0 });
-
 const pascalCase = (str: string) => _.upperFirst(_.camelCase(str.toLowerCase()));
 
 type ProgressEvent = {
@@ -69,6 +66,8 @@ export type ExtractResult = {
 export class MediaRepository {
   constructor(private logger: LoggingRepository) {
     this.logger.setContext(MediaRepository.name);
+    sharp.concurrency(0);
+    sharp.cache({ files: 0 });
   }
 
   /**
@@ -427,6 +426,7 @@ export class MediaRepository {
   }
 
   private parseFloat(value: string | number | undefined): number {
+    // eslint-disable-next-line unicorn/prefer-number-coercion
     return Number.parseFloat(value as string) || 0;
   }
 
