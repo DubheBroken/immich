@@ -317,7 +317,7 @@ class ForegroundUploadService {
         fileName = p.setExtension(fileName, p.extension(asset.name));
       }
 
-      final originalFileName = entity.isLivePhoto ? p.setExtension(fileName, p.extension(file.path)) : fileName;
+      final originalFileName = p.setExtension(fileName, p.extension(file.path));
       final deviceId = Store.get(StoreKey.deviceId);
 
       final fields = {

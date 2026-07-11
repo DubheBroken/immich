@@ -296,7 +296,7 @@ class BackgroundUploadService {
       fileName = p.setExtension(fileName, p.extension(asset.name));
     }
 
-    final originalFileName = entity.isLivePhoto ? p.setExtension(fileName, p.extension(file.path)) : fileName;
+    final originalFileName = p.setExtension(fileName, p.extension(file.path));
 
     String metadata = UploadTaskMetadata(
       localAssetId: asset.id,
