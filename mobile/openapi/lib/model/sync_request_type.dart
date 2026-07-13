@@ -47,6 +47,8 @@ class SyncRequestType {
   static const stacksV1 = SyncRequestType._(r'StacksV1');
   static const usersV1 = SyncRequestType._(r'UsersV1');
   static const peopleV1 = SyncRequestType._(r'PeopleV1');
+  static const peopleV2 = SyncRequestType._(r'PeopleV2');
+  static const faceClusterV1 = SyncRequestType._(r'FaceClusterV1');
   static const assetFacesV1 = SyncRequestType._(r'AssetFacesV1');
   static const assetFacesV2 = SyncRequestType._(r'AssetFacesV2');
   static const userMetadataV1 = SyncRequestType._(r'UserMetadataV1');
@@ -77,6 +79,8 @@ class SyncRequestType {
     stacksV1,
     usersV1,
     peopleV1,
+    peopleV2,
+    faceClusterV1,
     assetFacesV1,
     assetFacesV2,
     userMetadataV1,
@@ -142,6 +146,8 @@ class SyncRequestTypeTypeTransformer {
         case r'StacksV1': return SyncRequestType.stacksV1;
         case r'UsersV1': return SyncRequestType.usersV1;
         case r'PeopleV1': return SyncRequestType.peopleV1;
+        case r'PeopleV2': return SyncRequestType.peopleV2;
+        case r'FaceClusterV1': return SyncRequestType.faceClusterV1;
         case r'AssetFacesV1': return SyncRequestType.assetFacesV1;
         case r'AssetFacesV2': return SyncRequestType.assetFacesV2;
         case r'UserMetadataV1': return SyncRequestType.userMetadataV1;

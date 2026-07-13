@@ -24,7 +24,11 @@ const PersonCreateSchema = z
       .describe('Person date of birth'),
     isHidden: z.boolean().optional().describe('Person visibility (hidden)'),
     isFavorite: z.boolean().optional().describe('Mark as favorite'),
-    color: hexColor.nullable().optional().describe('Person color (hex)'),
+    color: hexColor
+      .nullable()
+      .optional()
+      .describe('Person color (hex)')
+      .meta(new HistoryBuilder().deprecated('v3.1.0').getExtensions()),
   })
   .meta({ id: 'PersonCreateDto' });
 
@@ -179,7 +183,6 @@ export function mapPerson(person: MaybeDehydrated<Person>): PersonResponseDto {
     thumbnailPath: person.thumbnailPath,
     isHidden: person.isHidden,
     isFavorite: person.isFavorite,
-    color: person.color ?? undefined,
     updatedAt: asDateTimeString(person.updatedAt),
   };
 }

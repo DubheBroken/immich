@@ -73,7 +73,10 @@ class SyncEntityType {
   static const stackV1 = SyncEntityType._(r'StackV1');
   static const stackDeleteV1 = SyncEntityType._(r'StackDeleteV1');
   static const personV1 = SyncEntityType._(r'PersonV1');
+  static const personV2 = SyncEntityType._(r'PersonV2');
   static const personDeleteV1 = SyncEntityType._(r'PersonDeleteV1');
+  static const faceClusterV1 = SyncEntityType._(r'FaceClusterV1');
+  static const faceClusterDeleteV1 = SyncEntityType._(r'FaceClusterDeleteV1');
   static const assetFaceV1 = SyncEntityType._(r'AssetFaceV1');
   static const assetFaceV2 = SyncEntityType._(r'AssetFaceV2');
   static const assetFaceDeleteV1 = SyncEntityType._(r'AssetFaceDeleteV1');
@@ -135,7 +138,10 @@ class SyncEntityType {
     stackV1,
     stackDeleteV1,
     personV1,
+    personV2,
     personDeleteV1,
+    faceClusterV1,
+    faceClusterDeleteV1,
     assetFaceV1,
     assetFaceV2,
     assetFaceDeleteV1,
@@ -232,7 +238,10 @@ class SyncEntityTypeTypeTransformer {
         case r'StackV1': return SyncEntityType.stackV1;
         case r'StackDeleteV1': return SyncEntityType.stackDeleteV1;
         case r'PersonV1': return SyncEntityType.personV1;
+        case r'PersonV2': return SyncEntityType.personV2;
         case r'PersonDeleteV1': return SyncEntityType.personDeleteV1;
+        case r'FaceClusterV1': return SyncEntityType.faceClusterV1;
+        case r'FaceClusterDeleteV1': return SyncEntityType.faceClusterDeleteV1;
         case r'AssetFaceV1': return SyncEntityType.assetFaceV1;
         case r'AssetFaceV2': return SyncEntityType.assetFaceV2;
         case r'AssetFaceDeleteV1': return SyncEntityType.assetFaceDeleteV1;

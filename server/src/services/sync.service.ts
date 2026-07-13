@@ -187,6 +187,8 @@ export class SyncService extends BaseService {
       [SyncRequestType.StacksV1]: () => this.syncStackV1(options, response, checkpointMap),
       [SyncRequestType.PartnerStacksV1]: () => this.syncPartnerStackV1(options, response, checkpointMap, session.id),
       [SyncRequestType.PeopleV1]: () => this.syncPeopleV1(options, response, checkpointMap),
+      [SyncRequestType.PeopleV2]: () => this.syncPeopleV2(options, response, checkpointMap),
+      [SyncRequestType.FaceClusterV1]: () => this.syncFaceClusterV1(options, response, checkpointMap),
       [SyncRequestType.AssetFacesV2]: () => this.syncAssetFacesV2(options, response, checkpointMap),
       [SyncRequestType.UserMetadataV1]: () => this.syncUserMetadataV1(options, response, checkpointMap),
       [SyncRequestType.AssetOcrV1]: () => this.syncAssetOcrV1(options, response, checkpointMap, auth),
@@ -825,6 +827,53 @@ export class SyncService extends BaseService {
     const upsertType = SyncEntityType.PersonV1;
     const upserts = this.syncRepository.person.getUpserts({ ...options, ack: checkpointMap[upsertType] });
     for await (const { updateId, ...data } of upserts) {
+      const person = await this.personRepository.getById(data.id);
+      if (!person) {
+        continue;
+      }
+      send(response, {
+        type: upsertType,
+        ids: [updateId],
+        data: {
+          birthDate: person.birthDate,
+          color: null,
+          createdAt: person.createdAt,
+          faceAssetId: person.featureFaceAssetId,
+          id: person.id,
+          isFavorite: person.isFavorite,
+          isHidden: person.isHidden,
+          name: person.name,
+          ownerId: person.ownerId,
+          updatedAt: person.updatedAt,
+        },
+      });
+    }
+  }
+
+  private async syncPeopleV2(options: SyncQueryOptions, response: Writable, checkpointMap: CheckpointMap) {
+    const deleteType = SyncEntityType.PersonDeleteV1;
+    const deletes = this.syncRepository.person.getDeletes({ ...options, ack: checkpointMap[deleteType] });
+    for await (const { id, ...data } of deletes) {
+      send(response, { type: deleteType, ids: [id], data });
+    }
+
+    const upsertType = SyncEntityType.PersonV2;
+    const upserts = this.syncRepository.person.getUpserts({ ...options, ack: checkpointMap[upsertType] });
+    for await (const { updateId, ...data } of upserts) {
+      send(response, { type: upsertType, ids: [updateId], data });
+    }
+  }
+
+  private async syncFaceClusterV1(options: SyncQueryOptions, response: Writable, checkpointMap: CheckpointMap) {
+    const deleteType = SyncEntityType.FaceClusterDeleteV1;
+    const deletes = this.syncRepository.faceCluster.getDeletes({ ...options, ack: checkpointMap[deleteType] });
+    for await (const { id, ...data } of deletes) {
+      send(response, { type: deleteType, ids: [id], data });
+    }
+
+    const upsertType = SyncEntityType.FaceClusterV1;
+    const upserts = this.syncRepository.faceCluster.getUpserts({ ...options, ack: checkpointMap[upsertType] });
+    for await (const { updateId, ...data } of upserts) {
       send(response, { type: upsertType, ids: [updateId], data });
     }
   }
@@ -844,8 +893,11 @@ export class SyncService extends BaseService {
 
     const upsertType = SyncEntityType.AssetFaceV2;
     const upserts = this.syncRepository.assetFace.getUpserts({ ...options, ack: checkpointMap[upsertType] });
-    for await (const { updateId, ...data } of upserts) {
-      send(response, { type: upsertType, ids: [updateId], data });
+    for await (const { updateId, faceClusterId, ...data } of upserts) {
+      const person = faceClusterId
+        ? await this.personRepository.getPersonForFaceCluster(faceClusterId, options.userId)
+        : undefined;
+      send(response, { type: upsertType, ids: [updateId], data: { ...data, personId: person?.id ?? null } });
     }
   }
 

@@ -536,7 +536,7 @@ order by
 select
   "asset_face"."id",
   "assetId",
-  "personId",
+  "faceClusterId",
   "imageWidth",
   "imageHeight",
   "boundingBoxX1",
@@ -654,6 +654,35 @@ where
   and "id" = $3
 order by
   "user"."updateId" asc
+
+-- SyncRepository.faceCluster.getDeletes
+select
+  "id",
+  "faceClusterId"
+from
+  "face_cluster_audit" as "face_cluster_audit"
+where
+  "face_cluster_audit"."id" < $1
+  and "face_cluster_audit"."id" > $2
+order by
+  "face_cluster_audit"."id" asc
+
+-- SyncRepository.faceCluster.getUpserts
+select
+  "id",
+  "birthDate",
+  "createdAt",
+  "featureFaceAssetId",
+  "name",
+  "updateId",
+  "updatedAt"
+from
+  "face_cluster" as "face_cluster"
+where
+  "face_cluster"."updateId" < $1
+  and "face_cluster"."updateId" > $2
+order by
+  "face_cluster"."updateId" asc
 
 -- SyncRepository.memory.getDeletes
 select
@@ -1045,13 +1074,10 @@ select
   "createdAt",
   "updatedAt",
   "ownerId",
-  "name",
-  "birthDate",
   "isHidden",
   "isFavorite",
-  "color",
   "updateId",
-  "faceAssetId"
+  "faceClusterId"
 from
   "person" as "person"
 where

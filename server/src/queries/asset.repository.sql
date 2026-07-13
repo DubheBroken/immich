@@ -192,7 +192,7 @@ select
             from
               "person"
             where
-              "asset_face"."personId" = "person"."id"
+              "asset_face"."faceClusterId" = "person"."faceClusterId"
           ) as "person" on true
         where
           "asset_face"."assetId" = "asset"."id"

@@ -108,13 +108,13 @@ with
   "cte" as (
     select
       "asset_face"."id",
-      "asset_face"."personId",
+      "asset_face"."faceClusterId",
       face_search.embedding <=> $1 as "distance"
     from
       "asset_face"
       inner join "asset" on "asset"."id" = "asset_face"."assetId"
       inner join "face_search" on "face_search"."faceId" = "asset_face"."id"
-      left join "person" on "person"."id" = "asset_face"."personId"
+      left join "face_cluster" on "face_cluster"."id" = "asset_face"."faceClusterId"
     where
       "asset"."ownerId" = any ($2::uuid[])
       and "asset"."deletedAt" is null
