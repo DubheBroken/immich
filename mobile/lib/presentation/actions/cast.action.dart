@@ -7,19 +7,17 @@ import 'package:immich_mobile/providers/cast.provider.dart';
 import 'package:immich_mobile/widgets/asset_viewer/cast_dialog.dart';
 
 class CastAction extends BaseAction {
-  const CastAction._({required super.scope, required super.icon, required super.label});
-
-  factory CastAction({required ActionScope scope}) {
-    final casting = scope.ref.watch(castProvider.select((state) => state.isCasting));
-    return CastAction._(
-      scope: scope,
-      icon: casting ? Icons.cast_connected_rounded : Icons.cast_rounded,
-      label: scope.context.t.cast,
-    );
-  }
+  const CastAction();
 
   @override
-  Future<void> onAction() async {
-    unawaited(showDialog(context: scope.context, builder: (_) => const CastDialog()));
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:ref, :context) = scope;
+    final casting = ref.watch(castProvider.select((state) => state.isCasting));
+
+    return .new(
+      icon: casting ? Icons.cast_connected_rounded : Icons.cast_rounded,
+      label: context.t.cast,
+      onAction: () async => unawaited(showDialog(context: context, builder: (_) => const CastDialog())),
+    );
   }
 }

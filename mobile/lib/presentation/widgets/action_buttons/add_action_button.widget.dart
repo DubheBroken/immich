@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
@@ -47,7 +46,6 @@ class _AddActionButtonState extends ConsumerState<AddActionButton> {
 
     final user = ref.read(currentUserProvider);
     final isOwner = asset is RemoteAsset && asset.ownerId == user?.id;
-    final scope = ActionScope.from(context, ref);
 
     return [
       Padding(
@@ -67,12 +65,8 @@ class _AddActionButtonState extends ConsumerState<AddActionButton> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text("move_to".tr(), style: context.textTheme.labelMedium),
         ),
-        ActionMenuItemWidget(
-          action: ArchiveAction(assets: [asset], scope: scope),
-        ),
-        ActionMenuItemWidget(
-          action: LockAction(assets: [asset], scope: scope),
-        ),
+        const ActionMenuItemWidget(source: .viewer, action: ArchiveAction()),
+        const ActionMenuItemWidget(source: .viewer, action: LockAction()),
       ],
     ];
   }

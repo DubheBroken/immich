@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/domain/services/tag.service.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
@@ -9,29 +8,40 @@ import 'package:immich_mobile/utils/asset_filter.dart';
 import 'package:immich_mobile/widgets/common/tag_picker.dart';
 
 class TagAction extends BaseAction {
-  final List<String> assetIds;
-
-  TagAction._({required this.assetIds, required super.scope, super.isVisible})
-    : super(icon: Icons.sell_outlined, label: scope.context.t.control_bottom_app_bar_add_tags);
-
-  factory TagAction({required Iterable<BaseAsset> assets, required ActionScope scope}) {
-    final assetIds = AssetFilter(assets).owned(scope.authUser.id).map((asset) => asset.id).toList(growable: false);
-    return ._(assetIds: assetIds, scope: scope, isVisible: assetIds.isNotEmpty);
-  }
+  const TagAction();
 
   @override
-  Future<void> onAction() async {
-    final results = await showTagPickerModal(context: scope.context);
-    if (results == null) {
-      return;
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:ref, :context, :authUser, :assets) = scope;
+
+    final assetIds = AssetFilter(assets).owned(authUser.id).map((asset) => asset.id).toList(growable: false);
+    if (assetIds.isEmpty) {
+      return null;
     }
 
-    await tagAssets(selected: results.$1, created: results.$2);
+    return .new(
+      icon: Icons.sell_outlined,
+      label: context.t.control_bottom_app_bar_add_tags,
+      onAction: () async {
+        final results = await showTagPickerModal(context: context);
+        if (results == null) {
+          return;
+        }
+
+        await applyTags(scope, assetIds, selected: results.$1, created: results.$2);
+      },
+    );
   }
 
   @visibleForTesting
-  Future<void> tagAssets({required Set<String> selected, required Set<String> created}) async {
-    final ActionScope(:context, :ref) = scope;
+  Future<void> applyTags(
+    ActionScope scope,
+    List<String> assetIds, {
+    required Set<String> selected,
+    required Set<String> created,
+  }) async {
+    final ActionScope(:ref, :context) = scope;
+
     final tagService = ref.read(tagServiceProvider);
     final tagIds = {...selected};
 

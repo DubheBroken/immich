@@ -7,20 +7,19 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
 import 'package:immich_ui/immich_ui.dart';
 
-class _ActionWidgetScope {
-  final IconData icon;
-  final String label;
-  final FutureOr<void> Function() onAction;
-  final FutureOr<void> Function()? onSecondaryAction;
-
-  const _ActionWidgetScope({required this.icon, required this.label, required this.onAction, this.onSecondaryAction});
-}
+typedef _ActionWidgetScope = ({
+  IconData icon,
+  String label,
+  FutureOr<void> Function() onAction,
+  FutureOr<void> Function()? onSecondaryAction,
+});
 
 class _ActionWidget extends ConsumerWidget {
   final BaseAction action;
+  final ActionSource? source;
   final Widget Function(_ActionWidgetScope context) builder;
 
-  const _ActionWidget({required this.action, required this.builder});
+  const _ActionWidget({required this.action, required this.builder, this.source});
 
   Future<void> _guard(Future<void> Function() handler) async {
     try {
@@ -30,39 +29,33 @@ class _ActionWidget extends ConsumerWidget {
     }
   }
 
-  Future<void> Function() get _onAction =>
-      () => _guard(action.onAction);
-
-  Future<void> Function()? get _onSecondaryAction {
-    final onSecondaryAction = action.onSecondaryAction;
-    if (onSecondaryAction == null) {
-      return null;
-    }
-
-    return () => _guard(onSecondaryAction);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!action.isVisible) {
-      return const SizedBox.shrink();
+    if (action.resolve(ActionScope.of(ref, source)) case final resolved?) {
+      final onSecondaryAction = resolved.onSecondaryAction;
+      return builder((
+        icon: resolved.icon,
+        label: resolved.label,
+        onAction: () => _guard(resolved.onAction),
+        onSecondaryAction: onSecondaryAction == null ? null : () => _guard(onSecondaryAction),
+      ));
     }
 
-    return builder(
-      .new(icon: action.icon, label: action.label, onAction: _onAction, onSecondaryAction: _onSecondaryAction),
-    );
+    return const SizedBox.shrink();
   }
 }
 
 class ActionIconButtonWidget extends StatelessWidget {
   final BaseAction action;
+  final ActionSource? source;
   final ImmichVariant variant;
 
-  const ActionIconButtonWidget({super.key, required this.action, this.variant = .ghost});
+  const ActionIconButtonWidget({super.key, required this.action, this.source, this.variant = .ghost});
 
   @override
   Widget build(BuildContext context) => _ActionWidget(
     action: action,
+    source: source,
     builder: (ctx) =>
         ImmichIconButton(icon: ctx.icon, onPressed: ctx.onAction, onLongPress: ctx.onSecondaryAction, variant: variant),
   );
@@ -70,13 +63,15 @@ class ActionIconButtonWidget extends StatelessWidget {
 
 class ActionButtonWidget extends StatelessWidget {
   final BaseAction action;
+  final ActionSource? source;
   final ImmichVariant variant;
 
-  const ActionButtonWidget({super.key, required this.action, this.variant = .ghost});
+  const ActionButtonWidget({super.key, required this.action, this.source, this.variant = .ghost});
 
   @override
   Widget build(BuildContext context) => _ActionWidget(
     action: action,
+    source: source,
     builder: (ctx) => ImmichTextButton(
       labelText: ctx.label,
       icon: ctx.icon,
@@ -89,12 +84,14 @@ class ActionButtonWidget extends StatelessWidget {
 
 class ActionColumnButtonWidget extends StatelessWidget {
   final BaseAction action;
+  final ActionSource? source;
 
-  const ActionColumnButtonWidget({super.key, required this.action});
+  const ActionColumnButtonWidget({super.key, required this.action, this.source});
 
   @override
   Widget build(BuildContext context) => _ActionWidget(
     action: action,
+    source: source,
     builder: (ctx) => ImmichColumnButton(
       icon: ctx.icon,
       label: ctx.label,
@@ -106,12 +103,14 @@ class ActionColumnButtonWidget extends StatelessWidget {
 
 class ActionMenuItemWidget extends StatelessWidget {
   final BaseAction action;
+  final ActionSource? source;
 
-  const ActionMenuItemWidget({super.key, required this.action});
+  const ActionMenuItemWidget({super.key, required this.action, this.source});
 
   @override
   Widget build(BuildContext context) => _ActionWidget(
     action: action,
+    source: source,
     builder: (ctx) => ImmichMenuItem(icon: ctx.icon, label: ctx.label, onPressed: ctx.onAction),
   );
 }

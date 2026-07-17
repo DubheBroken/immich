@@ -12,30 +12,34 @@ import 'package:immich_mobile/utils/asset_filter.dart';
 import 'package:immich_ui/immich_ui.dart';
 
 class UploadAction extends BaseAction {
-  final List<LocalAsset> assets;
+  final ActionSource source;
 
-  final bool showProgress;
-
-  UploadAction._({required this.assets, required this.showProgress, required super.scope, super.isVisible})
-    : super(icon: Icons.backup_outlined, label: scope.context.t.upload);
-
-  factory UploadAction({required Iterable<BaseAsset> assets, required ActionScope scope, bool showProgress = false}) {
-    final local = AssetFilter(assets).backedUp(isBackedUp: false).local().toList(growable: false);
-    return ._(assets: local, scope: scope, showProgress: showProgress, isVisible: local.isNotEmpty);
-  }
+  const UploadAction({required this.source});
 
   @override
-  Future<void> onAction() async {
-    if (assets.isEmpty) {
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:context, :assets) = scope;
+
+    final localAssets = AssetFilter(assets).backedUp(isBackedUp: false).local().toList(growable: false);
+    if (localAssets.isEmpty) {
+      return null;
+    }
+
+    return WidgetAction(
+      icon: Icons.backup_outlined,
+      label: context.t.upload,
+      onAction: () => _onAction(scope, localAssets),
+    );
+  }
+
+  Future<void> _onAction(ActionScope scope, List<LocalAsset> assets) async {
+    final ActionScope(:ref, :context) = scope;
+
+    if (source != ActionSource.viewer) {
+      await upload(scope, assets);
       return;
     }
 
-    if (!showProgress) {
-      await upload();
-      return;
-    }
-
-    final context = scope.context;
     var isDialogOpen = true;
     unawaited(
       showDialog<void>(
@@ -45,7 +49,7 @@ class UploadAction extends BaseAction {
       ).whenComplete(() => isDialogOpen = false),
     );
 
-    await upload();
+    await upload(scope, assets);
 
     if (isDialogOpen && context.mounted) {
       Navigator.of(context, rootNavigator: true).pop();
@@ -53,8 +57,8 @@ class UploadAction extends BaseAction {
   }
 
   @visibleForTesting
-  Future<void> upload() async {
-    final ActionScope(:context, :ref) = scope;
+  Future<void> upload(ActionScope scope, List<LocalAsset> assets) async {
+    final ActionScope(:ref, :context) = scope;
     final progress = ref.read(assetUploadProgressProvider.notifier);
     final cancelToken = Completer<void>();
     ref.read(manualUploadCancelTokenProvider.notifier).state = cancelToken;

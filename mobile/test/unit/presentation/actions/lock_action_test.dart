@@ -26,33 +26,33 @@ void main() {
   RemoteAsset owned({AssetVisibility visibility = .timeline}) =>
       RemoteAssetFactory.create(ownerId: context.currentUser.id, visibility: visibility);
 
+  const action = LockAction();
+
   group('LockAction', () {
     testWidgets('locks the eligible owned assets', (tester) async {
       final asset = owned();
-      final action = await tester.pumpTestAction(context, (scope) => LockAction(assets: [asset], scope: scope));
+      final resolved = await tester.runAction(context, action, assets: [asset]);
 
-      expect(action.icon, Icons.lock_rounded);
-      expect(action.label, StaticTranslations.instance.move_to_locked_folder);
-
+      expect(resolved!.icon, Icons.lock_rounded);
+      expect(resolved.label, StaticTranslations.instance.move_to_locked_folder);
       verify(() => assetService.update([asset.id], visibility: const Some(.locked))).called(1);
     });
 
     testWidgets('unlocks the eligible owned assets', (tester) async {
       final asset = owned(visibility: .locked);
-      final action = await tester.pumpTestAction(context, (scope) => LockAction(assets: [asset], scope: scope));
+      final resolved = await tester.runAction(context, action, assets: [asset]);
 
-      expect(action.icon, Icons.lock_open_rounded);
-      expect(action.label, StaticTranslations.instance.remove_from_locked_folder);
-
+      expect(resolved!.icon, Icons.lock_open_rounded);
+      expect(resolved.label, StaticTranslations.instance.remove_from_locked_folder);
       verify(() => assetService.update([asset.id], visibility: const Some(.timeline))).called(1);
     });
 
     testWidgets('dispatches on owned state, ignoring assets owned by others', (tester) async {
       final mine = owned(visibility: .locked);
       final theirs = RemoteAssetFactory.create();
-      final action = await tester.pumpTestAction(context, (scope) => LockAction(assets: [mine, theirs], scope: scope));
-      expect(action.label, StaticTranslations.instance.remove_from_locked_folder);
+      final resolved = await tester.runAction(context, action, assets: [mine, theirs]);
 
+      expect(resolved!.label, StaticTranslations.instance.remove_from_locked_folder);
       verify(() => assetService.update([mine.id], visibility: const Some(.timeline))).called(1);
     });
 
@@ -60,7 +60,7 @@ void main() {
       final first = owned();
       final second = owned();
 
-      await tester.pumpTestAction(context, (scope) => LockAction(assets: [first, second], scope: scope));
+      await tester.runAction(context, action, assets: [first, second]);
 
       verify(() => assetService.update([first.id, second.id], visibility: const Some(.locked))).called(1);
     });
@@ -69,7 +69,7 @@ void main() {
       final stale = owned();
       final alreadyLocked = owned(visibility: .locked);
 
-      await tester.pumpTestAction(context, (scope) => LockAction(assets: [stale, alreadyLocked], scope: scope));
+      await tester.runAction(context, action, assets: [stale, alreadyLocked]);
 
       verify(() => assetService.update([stale.id], visibility: const Some(.locked))).called(1);
     });
@@ -77,7 +77,7 @@ void main() {
     testWidgets('reports the locked count through the toast repository', (tester) async {
       final toast = context.repository.toast;
 
-      await tester.pumpTestAction(context, (scope) => LockAction(assets: [owned(), owned()], scope: scope));
+      await tester.runAction(context, action, assets: [owned(), owned()]);
 
       final message = verify(() => toast.success(captureAny())).captured.single as String;
       expect(message, StaticTranslations.instance.move_to_lock_folder_action_prompt(count: 2));
@@ -86,15 +86,13 @@ void main() {
     testWidgets('reports the unlocked count through the toast repository', (tester) async {
       final toast = context.repository.toast;
 
-      await tester.pumpTestAction(
+      await tester.runAction(
         context,
-        (scope) => LockAction(
-          assets: [
-            owned(visibility: .locked),
-            owned(visibility: .locked),
-          ],
-          scope: scope,
-        ),
+        action,
+        assets: [
+          owned(visibility: .locked),
+          owned(visibility: .locked),
+        ],
       );
 
       final message = verify(() => toast.success(captureAny())).captured.single as String;

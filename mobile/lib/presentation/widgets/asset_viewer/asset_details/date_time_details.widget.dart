@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/domain/models/exif.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
@@ -30,7 +29,7 @@ class DateTimeDetails extends ConsumerWidget {
     final asset = this.asset;
     final exifInfo = this.exifInfo;
     final isOwner = ref.watch(currentUserProvider)?.id == (asset is RemoteAsset ? asset.ownerId : null);
-    final editDateTime = EditDateTimeAction(assets: [asset], scope: ActionScope.from(context, ref));
+    final editDateTime = const EditDateTimeAction().resolve(ActionScope.of(ref, .viewer));
 
     return Column(
       children: [
@@ -38,7 +37,7 @@ class DateTimeDetails extends ConsumerWidget {
           title: _getDateTime(context, asset, exifInfo),
           titleStyle: context.textTheme.labelLarge,
           trailing: const Icon(Icons.edit, size: 18),
-          onTap: editDateTime.onAction,
+          onTap: editDateTime?.onAction,
         ),
         if (exifInfo != null) _SheetAssetDescription(exif: exifInfo, isEditable: isOwner),
       ],

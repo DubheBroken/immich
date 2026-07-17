@@ -3,11 +3,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/translate_extensions.dart';
-import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/presentation/actions/action.widget.dart';
-import 'package:immich_mobile/presentation/actions/asset_actions.dart';
+import 'package:immich_mobile/presentation/actions/archive.action.dart';
+import 'package:immich_mobile/presentation/actions/delete.action.dart';
+import 'package:immich_mobile/presentation/actions/download.action.dart';
+import 'package:immich_mobile/presentation/actions/edit_datetime.action.dart';
+import 'package:immich_mobile/presentation/actions/edit_location.action.dart';
+import 'package:immich_mobile/presentation/actions/favorite.action.dart';
+import 'package:immich_mobile/presentation/actions/lock.action.dart';
 import 'package:immich_mobile/presentation/actions/share.action.dart';
 import 'package:immich_mobile/presentation/actions/share_link.action.dart';
+import 'package:immich_mobile/presentation/actions/stack.action.dart';
 import 'package:immich_mobile/presentation/actions/timeline.action.dart';
 import 'package:immich_mobile/presentation/widgets/album/album_selector.widget.dart';
 import 'package:immich_mobile/presentation/widgets/bottom_sheet/base_bottom_sheet.widget.dart';
@@ -55,34 +61,29 @@ class FavoriteBottomSheet extends ConsumerWidget {
       ref.read(multiSelectProvider.notifier).reset();
     }
 
-    final scope = ActionScope.from(context, ref);
-    final assets = multiselect.selectedAssets.toList(growable: false);
-    final actions = AssetActions.from(scope, assets);
-
     return BaseBottomSheet(
       initialChildSize: 0.4,
       maxChildSize: 0.7,
       shouldCloseOnMinExtent: false,
       actions: [
-        ActionColumnButtonWidget(
-          action: ShareAction(assets: assets, scope: scope),
-        ),
-        if (multiselect.hasRemote) ...[
-          ActionColumnButtonWidget(
-            action: ShareLinkAction(assets: assets, scope: scope),
+        const ActionColumnButtonWidget(source: .timeline, action: ShareAction()),
+        const ActionColumnButtonWidget(source: .timeline, action: ShareLinkAction()),
+        ...const [
+          FavoriteAction(),
+          ArchiveAction(),
+          DownloadAction(),
+          DeleteAction(),
+          EditDateTimeAction(),
+          EditLocationAction(),
+          LockAction(),
+          StackAction(),
+          CleanupLocalAction(),
+        ].map(
+          (action) => ActionColumnButtonWidget(
+            source: .timeline,
+            action: TimelineAction(action: action),
           ),
-          ...[
-            actions.favorite,
-            actions.archive,
-            actions.delete,
-            actions.cleanup,
-            actions.stack,
-            actions.lock,
-            actions.editDateTime,
-            actions.editLocation,
-            actions.download,
-          ].map((action) => ActionColumnButtonWidget(action: TimelineAction(action: action))),
-        ],
+        ),
       ],
       slivers: multiselect.hasRemote
           ? [const AddToAlbumHeader(), AlbumSelector(onAlbumSelected: addAssetsToAlbum)]

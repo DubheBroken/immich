@@ -25,31 +25,21 @@ void main() {
 
   RemoteAsset owned() => RemoteAssetFactory.create(ownerId: context.currentUser.id);
 
-  group('TagAssetsAction', () {
-    testWidgets('visible with an owned remote asset', (tester) async {
-      final action = await tester.pumpActionButton(context, (scope) => TagAction(assets: [owned()], scope: scope));
+  const action = TagAction();
 
-      expect(action.isVisible, isTrue);
-      expect(action.icon, Icons.sell_outlined);
-      expect(action.label, StaticTranslations.instance.control_bottom_app_bar_add_tags);
+  group('TagAction', () {
+    testWidgets('visible with an owned remote asset', (tester) async {
+      final resolved = await tester.resolveAction(context, action, assets: [owned()]);
+
+      expect(resolved, isNotNull);
+      expect(resolved!.icon, Icons.sell_outlined);
+      expect(resolved.label, StaticTranslations.instance.control_bottom_app_bar_add_tags);
     });
 
     testWidgets('hidden for an asset owned by someone else', (tester) async {
-      final action = await tester.pumpActionButton(
-        context,
-        (scope) => TagAction(assets: [RemoteAssetFactory.create()], scope: scope),
-      );
+      final resolved = await tester.resolveAction(context, action, assets: [RemoteAssetFactory.create()]);
 
-      expect(action.isVisible, isFalse);
-    });
-
-    testWidgets('collects only the owned remote asset ids', (tester) async {
-      final mine = owned();
-      final theirs = RemoteAssetFactory.create();
-
-      final action = await tester.pumpActionButton(context, (scope) => TagAction(assets: [mine, theirs], scope: scope));
-
-      expect((action as TagAction).assetIds, [mine.id]);
+      expect(resolved, isNull);
     });
 
     testWidgets('applies the selected tags and toasts the count', (tester) async {
@@ -57,9 +47,8 @@ void main() {
       final toast = context.repository.toast;
       when(context.service.tag.bulkTagAssets).thenAnswer((_) async => 2);
 
-      final action = await tester.pumpActionButton(context, (scope) => TagAction(assets: [asset], scope: scope));
-
-      await (action as TagAction).tagAssets(selected: {'tag'}, created: const {});
+      final scope = await tester.actionScope(context, assets: [asset]);
+      await action.applyTags(scope, [asset.id], selected: {'tag'}, created: const {});
 
       verify(() => tagService.bulkTagAssets([asset.id], ['tag'])).called(1);
       final message = verify(() => toast.success(captureAny())).captured.single as String;
@@ -71,9 +60,8 @@ void main() {
       when(() => tagService.upsertTags(['new'])).thenAnswer((_) async => const [Tag(id: 'tag', value: 'new')]);
       when(context.service.tag.bulkTagAssets).thenAnswer((_) async => 1);
 
-      final action = await tester.pumpActionButton(context, (scope) => TagAction(assets: [asset], scope: scope));
-
-      await (action as TagAction).tagAssets(selected: const {}, created: {'new'});
+      final scope = await tester.actionScope(context, assets: [asset]);
+      await action.applyTags(scope, [asset.id], selected: const {}, created: {'new'});
 
       verify(() => tagService.upsertTags(['new'])).called(1);
       verify(() => tagService.bulkTagAssets([asset.id], ['tag'])).called(1);
@@ -82,9 +70,8 @@ void main() {
     testWidgets('does nothing when no tags are chosen', (tester) async {
       final asset = owned();
 
-      final action = await tester.pumpActionButton(context, (scope) => TagAction(assets: [asset], scope: scope));
-
-      await (action as TagAction).tagAssets(selected: const {}, created: const {});
+      final scope = await tester.actionScope(context, assets: [asset]);
+      await action.applyTags(scope, [asset.id], selected: const {}, created: const {});
 
       verifyNever(context.service.tag.bulkTagAssets);
     });

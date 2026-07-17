@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/platform_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
@@ -12,20 +13,11 @@ import 'package:immich_mobile/utils/asset_filter.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
 
 class DeleteAction extends BaseAction {
-  final List<String> localIds;
-  final List<String> remoteIds;
-  final bool trash;
+  const DeleteAction();
 
-  DeleteAction._({
-    required this.localIds,
-    required this.remoteIds,
-    required super.scope,
-    required this.trash,
-    super.isVisible,
-  }) : super(icon: Icons.delete_outline, label: trash ? scope.context.t.trash : scope.context.t.delete);
-
-  factory DeleteAction({required Iterable<BaseAsset> assets, required ActionScope scope}) {
-    final ActionScope(:ref) = scope;
+  @override
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:ref, :authUser, :assets, :context) = scope;
 
     final localIds = <String>[];
     final ownedRemote = <RemoteAsset>[];
@@ -33,28 +25,32 @@ class DeleteAction extends BaseAction {
       if (asset.localId case final id?) {
         localIds.add(id);
       }
-
-      if (asset case final RemoteAsset remote when remote.ownerId == scope.authUser.id) {
+      if (asset case final RemoteAsset remote when remote.ownerId == authUser.id) {
         ownedRemote.add(remote);
       }
     }
     final remoteIds = ownedRemote.map((asset) => asset.id).toList(growable: false);
+    if (remoteIds.isEmpty && localIds.isEmpty) {
+      return null;
+    }
 
-    final trashEnabled = ref.watch(serverInfoProvider.select((state) => state.serverFeatures.trash));
     // Assets already in trash or in locked page should be permanently deleted irrespective of the trash feature being enabled
-    final trash = trashEnabled && !ownedRemote.every((asset) => asset.isTrashed || asset.isLocked);
+    final permanentDelete = ownedRemote.every((asset) => asset.isTrashed || asset.isLocked);
+    final trash = !permanentDelete && ref.watch(serverInfoProvider.select((state) => state.serverFeatures.trash));
 
-    return ._(
-      localIds: localIds,
-      remoteIds: remoteIds,
-      trash: trash,
-      scope: scope,
-      isVisible: remoteIds.isNotEmpty || localIds.isNotEmpty,
+    return .new(
+      icon: Icons.delete_outline,
+      label: trash ? context.t.trash : context.t.delete,
+      onAction: () => _onAction(scope, localIds: localIds, remoteIds: remoteIds, trash: trash),
     );
   }
 
-  @override
-  Future<void> onAction() async {
+  Future<void> _onAction(
+    ActionScope scope, {
+    required List<String> localIds,
+    required List<String> remoteIds,
+    required bool trash,
+  }) async {
     final ActionScope(:ref, :context) = scope;
     final toast = ref.read(toastRepositoryProvider);
 
@@ -66,7 +62,7 @@ class DeleteAction extends BaseAction {
         return;
       }
 
-      final count = await cleanupLocalAssets(assetIds: localIds, scope: scope);
+      final count = await cleanupLocalAssets(ref, assetIds: localIds);
       if (!context.mounted || count <= 0) {
         return;
       }
@@ -80,7 +76,7 @@ class DeleteAction extends BaseAction {
     // TODO(shenlong): Handle the native prompt response and skip deleting trash when user cancels the prompt
     if (trash) {
       if (localIds.isNotEmpty) {
-        await cleanupLocalAssets(assetIds: localIds, scope: scope);
+        await cleanupLocalAssets(ref, assetIds: localIds);
         if (!context.mounted) {
           return;
         }
@@ -105,7 +101,7 @@ class DeleteAction extends BaseAction {
     // Perform server deletion first so we don't remove the only local copy if the server delete fails
     await ref.read(assetServiceProvider).delete(remoteIds);
     if (localIds.isNotEmpty && context.mounted) {
-      await cleanupLocalAssets(assetIds: localIds, scope: scope, requestPrompt: false);
+      await cleanupLocalAssets(ref, assetIds: localIds, requestPrompt: false);
     }
 
     if (!context.mounted) {
@@ -117,24 +113,26 @@ class DeleteAction extends BaseAction {
 }
 
 class CleanupLocalAction extends BaseAction {
-  final List<String> assetIds;
-
-  CleanupLocalAction._({required this.assetIds, required super.scope})
-    : super(
-        icon: Icons.no_cell_outlined,
-        label: scope.context.t.control_bottom_app_bar_delete_from_local,
-        isVisible: assetIds.isNotEmpty,
-      );
-
-  factory CleanupLocalAction({required Iterable<BaseAsset> assets, required ActionScope scope}) => ._(
-    assetIds: AssetFilter(assets).backedUp().map((asset) => asset.localId).nonNulls.toList(growable: false),
-    scope: scope,
-  );
+  const CleanupLocalAction();
 
   @override
-  Future<void> onAction() async {
+  WidgetAction? resolve(ActionScope scope) {
+    final ids = AssetFilter(scope.assets).backedUp().map((asset) => asset.localId).nonNulls.toList(growable: false);
+    if (ids.isEmpty) {
+      return null;
+    }
+
+    return .new(
+      icon: Icons.no_cell_outlined,
+      label: scope.context.t.control_bottom_app_bar_delete_from_local,
+      onAction: () => _onAction(scope, ids),
+    );
+  }
+
+  Future<void> _onAction(ActionScope scope, List<String> ids) async {
     final ActionScope(:ref, :context) = scope;
-    final count = await cleanupLocalAssets(assetIds: assetIds, scope: scope);
+
+    final count = await cleanupLocalAssets(ref, assetIds: ids);
     if (!context.mounted || count <= 0) {
       return;
     }
@@ -143,12 +141,8 @@ class CleanupLocalAction extends BaseAction {
 }
 
 @visibleForTesting
-Future<int> cleanupLocalAssets({
-  required List<String> assetIds,
-  required ActionScope scope,
-  bool requestPrompt = true,
-}) async {
-  final ActionScope(:ref, :context) = scope;
+Future<int> cleanupLocalAssets(WidgetRef ref, {required List<String> assetIds, bool requestPrompt = true}) async {
+  final context = ref.context;
 
   /// OS prompts on iOS & Android (without MANAGE_MEDIA)
   /// Custom prompt on Android (with MANAGE_MEDIA)

@@ -9,11 +9,14 @@ import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
 
 class PartnerAddAction extends BaseAction {
-  PartnerAddAction({required super.scope}) : super(icon: Icons.person_add_rounded, label: scope.context.t.add_partner);
+  const PartnerAddAction();
 
   @override
-  Future<void> onAction() async {
-    final ActionScope(:context, :ref, :authUser) = scope;
+  WidgetAction? resolve(ActionScope scope) =>
+      WidgetAction(icon: Icons.person_add_rounded, label: scope.context.t.add_partner, onAction: () => _add(scope));
+
+  Future<void> _add(ActionScope scope) async {
+    final ActionScope(:ref, :context, :authUser) = scope;
     final selected = await showDialog<User>(context: context, builder: (_) => const PartnerSelectionDialog());
     if (selected == null) {
       return;
@@ -24,15 +27,17 @@ class PartnerAddAction extends BaseAction {
 }
 
 class PartnerRemoveAction extends BaseAction {
-  PartnerRemoveAction({required super.scope, required this.sharedWithId, required this.partnerName})
-    : super(icon: Icons.person_remove_rounded, label: scope.context.t.remove);
-
   final String sharedWithId;
   final String partnerName;
 
+  const PartnerRemoveAction({required this.sharedWithId, required this.partnerName});
+
   @override
-  Future<void> onAction() async {
-    final ActionScope(:context, :ref, :authUser) = scope;
+  WidgetAction? resolve(ActionScope scope) =>
+      WidgetAction(icon: Icons.person_remove_rounded, label: scope.context.t.remove, onAction: () => _remove(scope));
+
+  Future<void> _remove(ActionScope scope) async {
+    final ActionScope(:ref, :context, :authUser) = scope;
 
     final confirmed = await showDialog<bool>(
       context: context,

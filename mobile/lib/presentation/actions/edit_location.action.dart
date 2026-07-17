@@ -9,37 +9,29 @@ import 'package:immich_mobile/widgets/common/location_picker.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 class EditLocationAction extends BaseAction {
-  final List<String> assetIds;
-  final RemoteAsset? origin;
+  const EditLocationAction();
 
-  const EditLocationAction._({
-    required this.assetIds,
-    required this.origin,
-    required super.scope,
-    required super.icon,
-    required super.label,
-    super.isVisible,
-  });
-
-  factory EditLocationAction({required Iterable<BaseAsset> assets, required ActionScope scope}) {
+  @override
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:authUser, :assets, :context) = scope;
     final owned = assets
         .whereType<RemoteAsset>()
-        .where((asset) => asset.ownerId == scope.authUser.id)
+        .where((asset) => asset.ownerId == authUser.id)
         .toList(growable: false);
+    final ids = owned.map((asset) => asset.id).toList(growable: false);
+    if (ids.isEmpty) {
+      return null;
+    }
 
-    return EditLocationAction._(
-      assetIds: owned.map((asset) => asset.id).toList(growable: false),
-      origin: owned.length == 1 ? owned.first : null,
-      scope: scope,
+    return .new(
       icon: Icons.edit_location_alt_outlined,
-      label: scope.context.t.control_bottom_app_bar_edit_location,
-      isVisible: owned.isNotEmpty,
+      label: context.t.control_bottom_app_bar_edit_location,
+      onAction: () => _onAction(scope, ids, owned.length == 1 ? owned.first : null),
     );
   }
 
-  @override
-  Future<void> onAction() async {
-    final ActionScope(:context, :ref) = scope;
+  Future<void> _onAction(ActionScope scope, List<String> ids, RemoteAsset? origin) async {
+    final ActionScope(:ref, :context) = scope;
 
     LatLng? initialLatLng;
     final seed = origin;
@@ -59,15 +51,14 @@ class EditLocationAction extends BaseAction {
       return;
     }
 
-    await save(location);
+    await save(scope, ids, location);
   }
 
   @visibleForTesting
-  Future<void> save(LatLng location) async {
-    final ActionScope(:context, :ref) = scope;
-
-    await ref.read(assetServiceProvider).update(assetIds, location: .some(location));
+  Future<void> save(ActionScope scope, List<String> ids, LatLng location) async {
+    final ActionScope(:ref, :context) = scope;
+    await ref.read(assetServiceProvider).update(ids, location: .some(location));
     ref.invalidate(assetExifProvider);
-    ref.read(toastRepositoryProvider).success(context.t.edit_location_action_prompt(count: assetIds.length));
+    ref.read(toastRepositoryProvider).success(context.t.edit_location_action_prompt(count: ids.length));
   }
 }

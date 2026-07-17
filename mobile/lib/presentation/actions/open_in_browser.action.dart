@@ -6,26 +6,39 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OpenInBrowserAction extends BaseAction {
-  final String remoteId;
   final TimelineOrigin origin;
 
-  OpenInBrowserAction({required this.remoteId, required this.origin, required super.scope})
-    : super(icon: Icons.open_in_browser, label: scope.context.t.open_in_browser);
+  const OpenInBrowserAction({required this.origin});
 
   @override
-  Future<void> onAction() async {
-    final serverEndpoint = Store.get(.serverEndpoint).replaceFirst('/api', '');
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:context, :assets) = scope;
 
-    final originPath = switch (origin) {
-      .favorite => '/favorites',
-      .trash => '/trash',
-      .archive => '/archive',
-      _ => '',
-    };
-
-    final url = Uri.parse('$serverEndpoint$originPath/photos/$remoteId');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: .externalApplication);
+    if (assets.isEmpty) {
+      return null;
     }
+    final remoteId = assets.first.remoteId;
+    if (remoteId == null) {
+      return null;
+    }
+
+    return .new(
+      icon: Icons.open_in_browser,
+      label: context.t.open_in_browser,
+      onAction: () async {
+        final serverEndpoint = Store.get(.serverEndpoint).replaceFirst('/api', '');
+        final originPath = switch (origin) {
+          .favorite => '/favorites',
+          .trash => '/trash',
+          .archive => '/archive',
+          _ => '',
+        };
+
+        final url = Uri.parse('$serverEndpoint$originPath/photos/$remoteId');
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: .externalApplication);
+        }
+      },
+    );
   }
 }

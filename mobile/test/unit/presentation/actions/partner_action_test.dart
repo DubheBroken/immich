@@ -28,14 +28,12 @@ void main() {
   ];
 
   group('PartnerAddAction', () {
+    const action = PartnerAddAction();
+
     testWidgets('creates a partner for the selected candidate', (tester) async {
       final candidate = UserFactory.create();
 
-      await tester.pumpTestAction(
-        context,
-        (scope) => PartnerAddAction(scope: scope),
-        overrides: overrides(candidates: [candidate]),
-      );
+      await tester.runAction(context, action, overrides: overrides(candidates: [candidate]));
       await tester.pumpUntilFound(find.text(candidate.name));
       await tester.tap(find.text(candidate.name));
       await tester.pumpAndSettle();
@@ -44,11 +42,7 @@ void main() {
     });
 
     testWidgets('creates nothing when the selection dialog is dismissed', (tester) async {
-      await tester.pumpTestAction(
-        context,
-        (scope) => PartnerAddAction(scope: scope),
-        overrides: overrides(candidates: [UserFactory.create()]),
-      );
+      await tester.runAction(context, action, overrides: overrides(candidates: [UserFactory.create()]));
       await tester.sendKeyEvent(LogicalKeyboardKey.escape); // dismiss without selecting
       await tester.pumpAndSettle();
 
@@ -57,13 +51,12 @@ void main() {
   });
 
   group('PartnerRemoveAction', () {
+    PartnerRemoveAction removeFor(User partner) =>
+        PartnerRemoveAction(sharedWithId: partner.id, partnerName: partner.name);
+
     testWidgets('deletes the partner after confirmation', (tester) async {
       final partner = UserFactory.create();
-      await tester.pumpTestAction(
-        context,
-        (scope) => PartnerRemoveAction(sharedWithId: partner.id, partnerName: partner.name, scope: scope),
-        overrides: overrides(),
-      );
+      await tester.runAction(context, removeFor(partner), overrides: overrides());
       await tester.tap(find.byType(TextButton).last); // confirm
       await tester.pumpAndSettle();
 
@@ -72,11 +65,7 @@ void main() {
 
     testWidgets('deletes nothing when the confirmation is cancelled', (tester) async {
       final partner = UserFactory.create();
-      await tester.pumpTestAction(
-        context,
-        (scope) => PartnerRemoveAction(sharedWithId: partner.id, partnerName: partner.name, scope: scope),
-        overrides: overrides(),
-      );
+      await tester.runAction(context, removeFor(partner), overrides: overrides());
       await tester.tap(find.byType(TextButton).first); // cancel
       await tester.pumpAndSettle();
 

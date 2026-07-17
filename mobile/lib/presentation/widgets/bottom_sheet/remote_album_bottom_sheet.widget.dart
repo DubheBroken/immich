@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/extensions/translate_extensions.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/presentation/actions/action.widget.dart';
-import 'package:immich_mobile/presentation/actions/asset_actions.dart';
+import 'package:immich_mobile/presentation/actions/archive.action.dart';
+import 'package:immich_mobile/presentation/actions/delete.action.dart';
+import 'package:immich_mobile/presentation/actions/download.action.dart';
+import 'package:immich_mobile/presentation/actions/edit_datetime.action.dart';
+import 'package:immich_mobile/presentation/actions/edit_location.action.dart';
+import 'package:immich_mobile/presentation/actions/favorite.action.dart';
+import 'package:immich_mobile/presentation/actions/lock.action.dart';
 import 'package:immich_mobile/presentation/actions/remove_from_album.action.dart';
 import 'package:immich_mobile/presentation/actions/set_album_cover.action.dart';
 import 'package:immich_mobile/presentation/actions/share.action.dart';
 import 'package:immich_mobile/presentation/actions/share_link.action.dart';
+import 'package:immich_mobile/presentation/actions/stack.action.dart';
 import 'package:immich_mobile/presentation/actions/timeline.action.dart';
 import 'package:immich_mobile/presentation/widgets/album/album_selector.widget.dart';
 import 'package:immich_mobile/presentation/widgets/bottom_sheet/base_bottom_sheet.widget.dart';
@@ -74,10 +80,6 @@ class _RemoteAlbumBottomSheetState extends ConsumerState<RemoteAlbumBottomSheet>
       return sheetController.animateTo(0.85, duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
     }
 
-    final scope = ActionScope.from(context, ref);
-    final assets = multiselect.selectedAssets.toList(growable: false);
-    final actions = AssetActions.from(scope, assets);
-
     return BaseBottomSheet(
       controller: sheetController,
       initialChildSize: 0.22,
@@ -85,39 +87,39 @@ class _RemoteAlbumBottomSheetState extends ConsumerState<RemoteAlbumBottomSheet>
       maxChildSize: 0.85,
       shouldCloseOnMinExtent: false,
       actions: [
-        ActionColumnButtonWidget(
-          action: ShareAction(assets: assets, scope: scope),
+        const ActionColumnButtonWidget(source: .timeline, action: ShareAction()),
+        const ActionColumnButtonWidget(source: .timeline, action: ShareLinkAction()),
+        if (ownsAlbum)
+          ...const [ArchiveAction(), FavoriteAction()].map(
+            (action) => ActionColumnButtonWidget(
+              source: .timeline,
+              action: TimelineAction(action: action),
+            ),
+          ),
+        const ActionColumnButtonWidget(
+          source: .timeline,
+          action: TimelineAction(action: DownloadAction()),
         ),
-        if (multiselect.hasRemote) ...[
-          ActionColumnButtonWidget(
-            action: ShareLinkAction(assets: assets, scope: scope),
-          ),
-
-          if (ownsAlbum) ...[
-            ...[
-              actions.favorite,
-              actions.archive,
-              actions.delete,
-              actions.cleanup,
-              actions.stack,
-              actions.lock,
-              actions.editDateTime,
-              actions.editLocation,
-            ].map((action) => ActionColumnButtonWidget(action: TimelineAction(action: action))),
-          ],
-          ActionColumnButtonWidget(action: TimelineAction(action: actions.download)),
-        ],
         if (ownsAlbum)
-          ActionColumnButtonWidget(
-            action: TimelineAction(
-              action: RemoveFromAlbumAction(assets: assets, albumId: widget.album.id, scope: scope),
+          ...const [DeleteAction(), EditDateTimeAction(), EditLocationAction(), LockAction(), StackAction()].map(
+            (action) => ActionColumnButtonWidget(
+              source: .timeline,
+              action: TimelineAction(action: action),
             ),
           ),
+        const ActionColumnButtonWidget(
+          source: .timeline,
+          action: TimelineAction(action: CleanupLocalAction()),
+        ),
         if (ownsAlbum)
           ActionColumnButtonWidget(
-            action: TimelineAction(
-              action: SetAlbumCoverAction(assets: assets, albumId: widget.album.id, scope: scope),
-            ),
+            source: .timeline,
+            action: TimelineAction(action: RemoveFromAlbumAction(albumId: widget.album.id)),
+          ),
+        if (ownsAlbum && multiselect.selectedAssets.length == 1)
+          ActionColumnButtonWidget(
+            source: .timeline,
+            action: TimelineAction(action: SetAlbumCoverAction(albumId: widget.album.id)),
           ),
       ],
       slivers: ownsAlbum

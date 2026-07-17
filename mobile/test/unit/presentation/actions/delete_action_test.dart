@@ -53,13 +53,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  const action = DeleteAction();
+
   group('DeleteAction', () {
     group('trash', () {
       testWidgets('trashes a remote-only owned asset', (tester) async {
         final asset = owned();
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [asset], scope: scope));
-        await tester.pumpAndSettle();
+        await tester.runAction(context, action, assets: [asset]);
 
         verify(() => assetService.trash([asset.id])).called(1);
         verifyNever(() => assetService.delete(any()));
@@ -70,8 +71,7 @@ void main() {
         final mine = owned();
         final theirs = RemoteAssetFactory.create();
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [mine, theirs], scope: scope));
-        await tester.pumpAndSettle();
+        await tester.runAction(context, action, assets: [mine, theirs]);
 
         verify(() => assetService.trash([mine.id])).called(1);
       });
@@ -79,8 +79,7 @@ void main() {
       testWidgets('trashes a merged asset and removes its device copy', (tester) async {
         final asset = owned(localId: 'local');
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [asset], scope: scope));
-        await tester.pumpAndSettle();
+        await tester.runAction(context, action, assets: [asset]);
 
         verify(() => cleanupService.deleteLocalAssets(['local'])).called(1);
         verify(() => assetService.trash([asset.id])).called(1);
@@ -91,11 +90,7 @@ void main() {
       testWidgets('permanently deletes when the trash feature is disabled', (tester) async {
         final asset = owned();
 
-        await tester.pumpTestAction(
-          context,
-          (scope) => DeleteAction(assets: [asset], scope: scope),
-          overrides: disableTrash(),
-        );
+        await tester.runAction(context, action, assets: [asset], overrides: disableTrash());
         await respondToDialog(tester, confirm: true);
 
         verify(() => assetService.delete([asset.id])).called(1);
@@ -105,11 +100,7 @@ void main() {
       testWidgets('permanently deletes a merged asset and removes its device copy', (tester) async {
         final asset = owned(localId: 'local');
 
-        await tester.pumpTestAction(
-          context,
-          (scope) => DeleteAction(assets: [asset], scope: scope),
-          overrides: disableTrash(),
-        );
+        await tester.runAction(context, action, assets: [asset], overrides: disableTrash());
         await respondToDialog(tester, confirm: true);
 
         verify(() => assetService.delete([asset.id])).called(1);
@@ -119,7 +110,7 @@ void main() {
       testWidgets('permanently deletes already trashed assets even with trash enabled', (tester) async {
         final asset = owned(deletedAt: DateTime(2024));
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [asset], scope: scope));
+        await tester.runAction(context, action, assets: [asset]);
         await respondToDialog(tester, confirm: true);
 
         verify(() => assetService.delete([asset.id])).called(1);
@@ -129,7 +120,7 @@ void main() {
       testWidgets('permanently deletes locked folder assets even with trash enabled', (tester) async {
         final asset = owned(visibility: .locked, localId: 'local');
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [asset], scope: scope));
+        await tester.runAction(context, action, assets: [asset]);
         await respondToDialog(tester, confirm: true);
 
         verify(() => assetService.delete([asset.id])).called(1);
@@ -139,7 +130,7 @@ void main() {
       testWidgets('does nothing when the confirmation is cancelled', (tester) async {
         final asset = owned(visibility: .locked, localId: 'local');
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [asset], scope: scope));
+        await tester.runAction(context, action, assets: [asset]);
         await respondToDialog(tester, confirm: false);
 
         verifyNever(() => assetService.delete(any()));
@@ -151,8 +142,7 @@ void main() {
       testWidgets('removes the device copy with no remote call', (tester) async {
         final asset = LocalAssetFactory.create();
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [asset], scope: scope));
-        await tester.pumpAndSettle();
+        await tester.runAction(context, action, assets: [asset]);
 
         verify(() => cleanupService.deleteLocalAssets([asset.id])).called(1);
         verifyNever(() => assetService.trash(any()));
@@ -164,11 +154,7 @@ void main() {
       testWidgets('permanent delete shows a single app dialog', (tester) async {
         final asset = owned(localId: 'local');
 
-        await tester.pumpTestAction(
-          context,
-          (scope) => DeleteAction(assets: [asset], scope: scope),
-          overrides: disableTrash(),
-        );
+        await tester.runAction(context, action, assets: [asset], overrides: disableTrash());
         await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.text(StaticTranslations.instance.delete_dialog_title), findsOneWidget);
@@ -185,7 +171,7 @@ void main() {
         await StoreService.I.put(StoreKey.manageLocalMediaAndroid, true);
         final asset = LocalAssetFactory.create();
 
-        await tester.pumpTestAction(context, (scope) => DeleteAction(assets: [asset], scope: scope));
+        await tester.runAction(context, action, assets: [asset]);
         await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.text(StaticTranslations.instance.move_to_device_trash), findsOneWidget);
@@ -199,23 +185,21 @@ void main() {
   });
 
   group('CleanupLocalAction', () {
+    const cleanup = CleanupLocalAction();
+
     testWidgets('deletes only backed up device copies', (tester) async {
       final backedUp = LocalAssetFactory.create(remoteId: 'remote');
       final localOnly = LocalAssetFactory.create();
 
-      await tester.pumpTestAction(context, (scope) => CleanupLocalAction(assets: [backedUp, localOnly], scope: scope));
-      await tester.pumpAndSettle();
+      await tester.runAction(context, cleanup, assets: [backedUp, localOnly]);
 
       verify(() => cleanupService.deleteLocalAssets([backedUp.id])).called(1);
     });
 
     testWidgets('is hidden when no backed up assets are selected', (tester) async {
-      final action = await tester.pumpActionButton(
-        context,
-        (scope) => CleanupLocalAction(assets: [LocalAssetFactory.create()], scope: scope),
-      );
+      final resolved = await tester.resolveAction(context, cleanup, assets: [LocalAssetFactory.create()]);
 
-      expect(action.isVisible, isFalse);
+      expect(resolved, isNull);
     });
   });
 }

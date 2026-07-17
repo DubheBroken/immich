@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
@@ -7,41 +6,33 @@ import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/asset_filter.dart';
 
 class FavoriteAction extends BaseAction {
-  final List<String> assetIds;
-  final bool favorite;
+  const FavoriteAction();
 
-  const FavoriteAction._({
-    required this.assetIds,
-    required this.favorite,
-    required super.scope,
-    required super.icon,
-    required super.label,
-    super.isVisible,
-  });
+  @override
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:ref, :context, :authUser, :assets) = scope;
 
-  factory FavoriteAction({required Iterable<BaseAsset> assets, required ActionScope scope}) {
-    final ownedAssets = AssetFilter(assets).owned(scope.authUser.id);
-    final favorite = ownedAssets.favorite(isFavorite: false).isNotEmpty;
-    final assetIds = ownedAssets.favorite(isFavorite: !favorite).map((asset) => asset.id).toList(growable: false);
+    final owned = AssetFilter(assets).owned(authUser.id);
+    final favorite = owned.favorite(isFavorite: false).isNotEmpty;
+    final ids = owned.favorite(isFavorite: !favorite).map((asset) => asset.id).toList(growable: false);
+    if (ids.isEmpty) {
+      return null;
+    }
 
-    return FavoriteAction._(
-      assetIds: assetIds,
-      favorite: favorite,
-      scope: scope,
+    return .new(
       icon: favorite ? Icons.favorite_border_rounded : Icons.favorite_rounded,
-      label: favorite ? scope.context.t.favorite : scope.context.t.unfavorite,
-      isVisible: assetIds.isNotEmpty,
+      label: favorite ? context.t.favorite : context.t.unfavorite,
+      onAction: () => _onAction(scope, ids, favorite: favorite),
     );
   }
 
-  @override
-  Future<void> onAction() async {
+  Future<void> _onAction(ActionScope scope, List<String> ids, {required bool favorite}) async {
     final ActionScope(:ref, :context) = scope;
 
-    await ref.read(assetServiceProvider).update(assetIds, isFavorite: .some(favorite));
+    await ref.read(assetServiceProvider).update(ids, isFavorite: .some(favorite));
     final message = favorite
-        ? context.t.favorite_action_prompt(count: assetIds.length)
-        : context.t.unfavorite_action_prompt(count: assetIds.length);
+        ? context.t.favorite_action_prompt(count: ids.length)
+        : context.t.unfavorite_action_prompt(count: ids.length);
     ref.read(toastRepositoryProvider).success(message);
   }
 }

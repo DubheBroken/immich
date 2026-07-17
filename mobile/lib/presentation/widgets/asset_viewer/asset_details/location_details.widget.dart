@@ -64,7 +64,7 @@ class _LocationDetailsState extends ConsumerState<LocationDetails> {
       return const SizedBox.shrink();
     }
 
-    final editLocation = EditLocationAction(assets: [asset], scope: ActionScope.from(context, ref));
+    final editLocation = const EditLocationAction().resolve(ActionScope.of(ref, .viewer));
     final locationName = _getLocationName(exifInfo);
     final coordinates = "${exifInfo?.latitude?.toStringAsFixed(4)}, ${exifInfo?.longitude?.toStringAsFixed(4)}";
 
@@ -77,7 +77,7 @@ class _LocationDetailsState extends ConsumerState<LocationDetails> {
             title: 'location'.t(context: context),
             titleStyle: context.textTheme.labelLarge?.copyWith(color: context.colorScheme.onSurfaceSecondary),
             trailing: hasCoordinates ? const Icon(Icons.edit_location_alt, size: 20) : null,
-            onTap: editLocation.onAction,
+            onTap: editLocation?.onAction,
           ),
           if (hasCoordinates)
             Padding(
@@ -112,7 +112,7 @@ class _LocationDetailsState extends ConsumerState<LocationDetails> {
                 color: context.primaryColor,
               ),
               leading: const Icon(Icons.location_off),
-              onTap: editLocation.onAction,
+              onTap: editLocation?.onAction,
             ),
         ],
       ),

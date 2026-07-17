@@ -1,28 +1,35 @@
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
 
+/// Decorates an action so the multi-select is cleared after it runs.
 class TimelineAction extends BaseAction {
   final BaseAction action;
 
-  TimelineAction({required this.action})
-    : super(scope: action.scope, icon: action.icon, label: action.label, isVisible: action.isVisible);
+  const TimelineAction({required this.action});
 
   @override
-  Future<void> onAction() async {
-    await action.onAction();
-    scope.ref.read(multiSelectProvider.notifier).reset();
-  }
-
-  @override
-  Future<void> Function()? get onSecondaryAction {
-    final inner = action.onSecondaryAction;
-    if (inner == null) {
+  WidgetAction? resolve(ActionScope scope) {
+    final resolved = action.resolve(scope);
+    if (resolved == null) {
       return null;
     }
 
-    return () async {
-      await inner();
-      scope.ref.read(multiSelectProvider.notifier).reset();
-    };
+    void reset() => scope.ref.read(multiSelectProvider.notifier).reset();
+    final onSecondaryAction = resolved.onSecondaryAction;
+
+    return WidgetAction(
+      icon: resolved.icon,
+      label: resolved.label,
+      onAction: () async {
+        await resolved.onAction();
+        reset();
+      },
+      onSecondaryAction: onSecondaryAction == null
+          ? null
+          : () async {
+              await onSecondaryAction();
+              reset();
+            },
+    );
   }
 }

@@ -10,26 +10,26 @@ import 'package:immich_mobile/utils/timezone.dart';
 import 'package:immich_mobile/widgets/common/date_time_picker.dart';
 
 class EditDateTimeAction extends BaseAction {
-  final List<String> assetIds;
-  final RemoteAsset? origin;
+  const EditDateTimeAction();
 
-  EditDateTimeAction._({required this.assetIds, required this.origin, required super.scope, super.isVisible})
-    : super(icon: Icons.edit_calendar_outlined, label: scope.context.t.control_bottom_app_bar_edit_time);
+  @override
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:authUser, :assets, :context) = scope;
+    final owned = AssetFilter(assets).owned(authUser.id);
+    final ids = owned.map((asset) => asset.id).toList(growable: false);
+    if (ids.isEmpty) {
+      return null;
+    }
 
-  factory EditDateTimeAction({required Iterable<BaseAsset> assets, required ActionScope scope}) {
-    final owned = AssetFilter(assets).owned(scope.authUser.id);
-
-    return EditDateTimeAction._(
-      assetIds: owned.map((asset) => asset.id).toList(growable: false),
-      origin: owned.firstOrNull,
-      scope: scope,
-      isVisible: owned.isNotEmpty,
+    return .new(
+      icon: Icons.edit_calendar_outlined,
+      label: context.t.control_bottom_app_bar_edit_time,
+      onAction: () => _onAction(scope, ids, owned.firstOrNull),
     );
   }
 
-  @override
-  Future<void> onAction() async {
-    final ActionScope(:context, :ref) = scope;
+  Future<void> _onAction(ActionScope scope, List<String> ids, RemoteAsset? origin) async {
+    final ActionScope(:ref, :context) = scope;
 
     DateTime? initialDate;
     String? timeZone;
@@ -63,15 +63,14 @@ class EditDateTimeAction extends BaseAction {
       return;
     }
 
-    await save(dateTime);
+    await save(scope, ids, dateTime);
   }
 
   @visibleForTesting
-  Future<void> save(String dateTime) async {
-    final ActionScope(:context, :ref) = scope;
-
-    await ref.read(assetServiceProvider).update(assetIds, dateTime: .some(dateTime));
+  Future<void> save(ActionScope scope, List<String> ids, String dateTime) async {
+    final ActionScope(:ref, :context) = scope;
+    await ref.read(assetServiceProvider).update(ids, dateTime: .some(dateTime));
     ref.invalidate(assetExifProvider);
-    ref.read(toastRepositoryProvider).success(context.t.edit_date_and_time_action_prompt(count: assetIds.length));
+    ref.read(toastRepositoryProvider).success(context.t.edit_date_and_time_action_prompt(count: ids.length));
   }
 }

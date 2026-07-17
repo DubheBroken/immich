@@ -26,36 +26,33 @@ void main() {
   RemoteAsset owned({bool isFavorite = false}) =>
       RemoteAssetFactory.create(ownerId: context.currentUser.id, isFavorite: isFavorite);
 
+  const action = FavoriteAction();
+
   group('FavoriteAction', () {
     testWidgets('favorites the eligible owned assets', (tester) async {
       final asset = owned();
-      final action = await tester.pumpTestAction(context, (scope) => FavoriteAction(assets: [asset], scope: scope));
+      final resolved = await tester.runAction(context, action, assets: [asset]);
 
-      expect(action.icon, Icons.favorite_border_rounded);
-      expect(action.label, StaticTranslations.instance.favorite);
-
+      expect(resolved!.icon, Icons.favorite_border_rounded);
+      expect(resolved.label, StaticTranslations.instance.favorite);
       verify(() => assetService.update([asset.id], isFavorite: const Some(true))).called(1);
     });
 
     testWidgets('unfavorite the eligible owned assets', (tester) async {
       final asset = owned(isFavorite: true);
-      final action = await tester.pumpTestAction(context, (scope) => FavoriteAction(assets: [asset], scope: scope));
+      final resolved = await tester.runAction(context, action, assets: [asset]);
 
-      expect(action.icon, Icons.favorite_rounded);
-      expect(action.label, StaticTranslations.instance.unfavorite);
-
+      expect(resolved!.icon, Icons.favorite_rounded);
+      expect(resolved.label, StaticTranslations.instance.unfavorite);
       verify(() => assetService.update([asset.id], isFavorite: const Some(false))).called(1);
     });
 
     testWidgets('dispatches on owned state, ignoring assets owned by others', (tester) async {
       final mine = owned(isFavorite: true);
       final theirs = RemoteAssetFactory.create();
-      final action = await tester.pumpTestAction(
-        context,
-        (scope) => FavoriteAction(assets: [mine, theirs], scope: scope),
-      );
-      expect(action.label, StaticTranslations.instance.unfavorite);
+      final resolved = await tester.runAction(context, action, assets: [mine, theirs]);
 
+      expect(resolved!.label, StaticTranslations.instance.unfavorite);
       verify(() => assetService.update([mine.id], isFavorite: const Some(false))).called(1);
     });
 
@@ -63,7 +60,7 @@ void main() {
       final first = owned();
       final second = owned();
 
-      await tester.pumpTestAction(context, (scope) => FavoriteAction(assets: [first, second], scope: scope));
+      await tester.runAction(context, action, assets: [first, second]);
 
       verify(() => assetService.update([first.id, second.id], isFavorite: const Some(true))).called(1);
     });
@@ -72,7 +69,7 @@ void main() {
       final stale = owned();
       final alreadyFavorite = owned(isFavorite: true);
 
-      await tester.pumpTestAction(context, (scope) => FavoriteAction(assets: [stale, alreadyFavorite], scope: scope));
+      await tester.runAction(context, action, assets: [stale, alreadyFavorite]);
 
       verify(() => assetService.update([stale.id], isFavorite: const Some(true))).called(1);
     });
@@ -80,7 +77,7 @@ void main() {
     testWidgets('reports the favorite count through the toast repository', (tester) async {
       final toast = context.repository.toast;
 
-      await tester.pumpTestAction(context, (scope) => FavoriteAction(assets: [owned(), owned()], scope: scope));
+      await tester.runAction(context, action, assets: [owned(), owned()]);
 
       final message = verify(() => toast.success(captureAny())).captured.single as String;
       expect(message, StaticTranslations.instance.favorite_action_prompt(count: 2));
@@ -89,10 +86,7 @@ void main() {
     testWidgets('reports the unfavorite count through the toast repository', (tester) async {
       final toast = context.repository.toast;
 
-      await tester.pumpTestAction(
-        context,
-        (scope) => FavoriteAction(assets: [owned(isFavorite: true), owned(isFavorite: true)], scope: scope),
-      );
+      await tester.runAction(context, action, assets: [owned(isFavorite: true), owned(isFavorite: true)]);
 
       final message = verify(() => toast.success(captureAny())).captured.single as String;
       expect(message, StaticTranslations.instance.unfavorite_action_prompt(count: 2));

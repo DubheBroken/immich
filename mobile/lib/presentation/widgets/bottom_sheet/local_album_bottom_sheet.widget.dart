@@ -1,17 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/presentation/actions/action.widget.dart';
-import 'package:immich_mobile/presentation/actions/asset_actions.dart';
+import 'package:immich_mobile/presentation/actions/delete.action.dart';
 import 'package:immich_mobile/presentation/actions/share.action.dart';
 import 'package:immich_mobile/presentation/actions/timeline.action.dart';
+import 'package:immich_mobile/presentation/actions/upload.action.dart';
 import 'package:immich_mobile/presentation/widgets/album/album_selector.widget.dart';
 import 'package:immich_mobile/presentation/widgets/bottom_sheet/base_bottom_sheet.widget.dart';
 import 'package:immich_mobile/providers/infrastructure/action.provider.dart';
-import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
 
 class LocalAlbumBottomSheet extends ConsumerStatefulWidget {
@@ -62,24 +61,19 @@ class _LocalAlbumBottomSheetState extends ConsumerState<LocalAlbumBottomSheet> {
       return sheetController.animateTo(0.85, duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
     }
 
-    final scope = ActionScope.from(context, ref);
-    final assets = ref.watch(multiSelectProvider).selectedAssets.toList(growable: false);
-    final actions = AssetActions.from(scope, assets);
-
     return BaseBottomSheet(
       controller: sheetController,
       initialChildSize: 0.25,
       maxChildSize: 0.85,
       shouldCloseOnMinExtent: false,
       actions: [
-        ActionColumnButtonWidget(
-          action: ShareAction(assets: assets, scope: scope),
+        const ActionColumnButtonWidget(source: .timeline, action: ShareAction()),
+        ...const [DeleteAction(), CleanupLocalAction(), UploadAction(source: .timeline)].map(
+          (action) => ActionColumnButtonWidget(
+            source: .timeline,
+            action: TimelineAction(action: action),
+          ),
         ),
-        ...[
-          actions.delete,
-          actions.cleanup,
-        ].map((action) => ActionColumnButtonWidget(action: TimelineAction(action: action))),
-        ActionColumnButtonWidget(action: TimelineAction(action: actions.upload)),
       ],
       slivers: [
         const AddToAlbumHeader(),

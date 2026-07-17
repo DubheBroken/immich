@@ -12,27 +12,25 @@ import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/repositories/asset_media.repository.dart';
 
 class ShareAction extends BaseAction {
-  final List<BaseAsset> assets;
+  const ShareAction();
 
-  ShareAction._({required this.assets, required super.scope, super.isVisible})
-    : super(
-        icon: CurrentPlatform.isAndroid ? Icons.share_rounded : Icons.ios_share_rounded,
-        label: scope.context.t.share,
-      );
+  @override
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:ref, :context, :assets) = scope;
+    if (assets.isEmpty) {
+      return null;
+    }
 
-  factory ShareAction({required Iterable<BaseAsset> assets, required ActionScope scope}) {
-    final shareable = assets.toList(growable: false);
-    return ._(assets: shareable, scope: scope, isVisible: shareable.isNotEmpty);
+    return .new(
+      icon: CurrentPlatform.isAndroid ? Icons.share_rounded : Icons.ios_share_rounded,
+      label: scope.context.t.share,
+      onAction: () => _share(scope, assets, scope.ref.read(appConfigProvider).share.fileType),
+      onSecondaryAction: () => _promptQualityAndShare(scope, assets),
+    );
   }
 
-  @override
-  Future<void> onAction() => _share(scope.ref.read(appConfigProvider).share.fileType);
-
-  @override
-  Future<void> Function()? get onSecondaryAction => _promptQualityAndShare;
-
-  Future<void> _promptQualityAndShare() async {
-    final ActionScope(:context, :ref) = scope;
+  Future<void> _promptQualityAndShare(ActionScope scope, Iterable<BaseAsset> assets) async {
+    final ActionScope(:ref, :context) = scope;
 
     // only show preview option when at least one of the assets is not a video
     // we cant share previews of videos
@@ -54,11 +52,11 @@ class ShareAction extends BaseAction {
       return;
     }
 
-    await _share(fileType);
+    await _share(scope, assets, fileType);
   }
 
-  Future<void> _share(ShareAssetType fileType) async {
-    final ActionScope(:context, :ref) = scope;
+  Future<void> _share(ActionScope scope, Iterable<BaseAsset> assets, ShareAssetType fileType) async {
+    final ActionScope(:ref, :context) = scope;
     final cancelCompleter = Completer<void>();
     final progress = ValueNotifier<double?>(null);
 
@@ -81,7 +79,7 @@ class ShareAction extends BaseAction {
           ref
               .read(assetMediaRepositoryProvider)
               .shareAssets(
-                assets,
+                assets.toList(growable: false),
                 context,
                 fileType: fileType,
                 cancelCompleter: cancelCompleter,

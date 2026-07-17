@@ -8,11 +8,16 @@ import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 
 class SlideshowAction extends BaseAction {
-  SlideshowAction({required super.scope}) : super(icon: Icons.slideshow, label: scope.context.t.slideshow);
+  const SlideshowAction();
 
   @override
-  Future<void> onAction() async {
-    final ActionScope(:context, :ref) = scope;
-    unawaited(context.pushRoute(DriftSlideshowRoute(timeline: ref.read(timelineServiceProvider))));
+  WidgetAction? resolve(ActionScope scope) {
+    final ActionScope(:ref, :context) = scope;
+    return .new(
+      icon: Icons.slideshow,
+      label: context.t.slideshow,
+      onAction: () async =>
+          unawaited(context.pushRoute(DriftSlideshowRoute(timeline: ref.read(timelineServiceProvider)))),
+    );
   }
 }

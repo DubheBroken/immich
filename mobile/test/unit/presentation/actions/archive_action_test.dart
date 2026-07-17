@@ -26,36 +26,33 @@ void main() {
   RemoteAsset owned({AssetVisibility visibility = AssetVisibility.timeline}) =>
       RemoteAssetFactory.create(ownerId: context.currentUser.id, visibility: visibility);
 
+  const action = ArchiveAction();
+
   group('ArchiveAction', () {
     testWidgets('archives the eligible owned assets', (tester) async {
       final asset = owned();
-      final action = await tester.pumpTestAction(context, (scope) => ArchiveAction(assets: [asset], scope: scope));
+      final resolved = await tester.runAction(context, action, assets: [asset]);
 
-      expect(action.icon, Icons.archive_outlined);
-      expect(action.label, StaticTranslations.instance.archive);
-
+      expect(resolved!.icon, Icons.archive_outlined);
+      expect(resolved.label, StaticTranslations.instance.archive);
       verify(() => assetService.update([asset.id], visibility: const Some(AssetVisibility.archive))).called(1);
     });
 
     testWidgets('unarchive the eligible owned assets', (tester) async {
       final asset = owned(visibility: .archive);
-      final action = await tester.pumpTestAction(context, (scope) => ArchiveAction(assets: [asset], scope: scope));
+      final resolved = await tester.runAction(context, action, assets: [asset]);
 
-      expect(action.icon, Icons.unarchive_outlined);
-      expect(action.label, StaticTranslations.instance.unarchive);
-
+      expect(resolved!.icon, Icons.unarchive_outlined);
+      expect(resolved.label, StaticTranslations.instance.unarchive);
       verify(() => assetService.update([asset.id], visibility: const Some(AssetVisibility.timeline))).called(1);
     });
 
     testWidgets('dispatches on owned state, ignoring assets owned by others', (tester) async {
       final mine = owned(visibility: .archive);
       final theirs = RemoteAssetFactory.create();
-      final action = await tester.pumpTestAction(
-        context,
-        (scope) => ArchiveAction(assets: [mine, theirs], scope: scope),
-      );
-      expect(action.label, StaticTranslations.instance.unarchive);
+      final resolved = await tester.runAction(context, action, assets: [mine, theirs]);
 
+      expect(resolved!.label, StaticTranslations.instance.unarchive);
       verify(() => assetService.update([mine.id], visibility: const Some(AssetVisibility.timeline))).called(1);
     });
 
@@ -63,7 +60,7 @@ void main() {
       final first = owned();
       final second = owned();
 
-      await tester.pumpTestAction(context, (scope) => ArchiveAction(assets: [first, second], scope: scope));
+      await tester.runAction(context, action, assets: [first, second]);
 
       verify(
         () => assetService.update([first.id, second.id], visibility: const Some(AssetVisibility.archive)),
@@ -74,7 +71,7 @@ void main() {
       final stale = owned();
       final alreadyArchived = owned(visibility: .archive);
 
-      await tester.pumpTestAction(context, (scope) => ArchiveAction(assets: [stale, alreadyArchived], scope: scope));
+      await tester.runAction(context, action, assets: [stale, alreadyArchived]);
 
       verify(() => assetService.update([stale.id], visibility: const Some(AssetVisibility.archive))).called(1);
     });
@@ -82,7 +79,7 @@ void main() {
     testWidgets('reports the archived count through the toast repository', (tester) async {
       final toast = context.repository.toast;
 
-      await tester.pumpTestAction(context, (scope) => ArchiveAction(assets: [owned(), owned()], scope: scope));
+      await tester.runAction(context, action, assets: [owned(), owned()]);
 
       final message = verify(() => toast.success(captureAny())).captured.single as String;
       expect(message, StaticTranslations.instance.archive_action_prompt(count: 2));
@@ -91,15 +88,13 @@ void main() {
     testWidgets('reports the unarchive count through the toast repository', (tester) async {
       final toast = context.repository.toast;
 
-      await tester.pumpTestAction(
+      await tester.runAction(
         context,
-        (scope) => ArchiveAction(
-          assets: [
-            owned(visibility: .archive),
-            owned(visibility: .archive),
-          ],
-          scope: scope,
-        ),
+        action,
+        assets: [
+          owned(visibility: .archive),
+          owned(visibility: .archive),
+        ],
       );
 
       final message = verify(() => toast.success(captureAny())).captured.single as String;
