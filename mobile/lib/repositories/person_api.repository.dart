@@ -26,6 +26,21 @@ class PersonApiRepository extends ApiRepository {
     return _toPerson(response);
   }
 
+  Future<PersonDto> updateVisibility(String id, {required bool isHidden}) async {
+    final dto = PersonUpdateDto(
+      isHidden: Optional.present(isHidden),
+    );
+    final response = await checkNull(_api.updatePerson(id, dto));
+    return _toPerson(response);
+  }
+
+  Future<bool> merge(String targetPersonId, List<String> sourcePersonIds) async {
+    final dto = MergePersonDto(ids: sourcePersonIds);
+    // mergePerson throws ApiException on failure; no exception means success
+    await _api.mergePerson(targetPersonId, dto);
+    return true;
+  }
+
   static PersonDto _toPerson(PersonResponseDto dto) => PersonDto(
     birthDate: dto.birthDate,
     id: dto.id,

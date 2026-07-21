@@ -2,12 +2,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/domain/models/person.model.dart';
-import 'package:immich_mobile/extensions/build_context_extensions.dart';
+import 'package:immich_mobile/extensions/translate_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/people/person_option_sheet.widget.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/timeline.widget.dart';
+import 'package:immich_mobile/providers/infrastructure/people.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
+import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/people.utils.dart';
+import 'package:immich_mobile/widgets/common/immich_toast.dart';
 import 'package:immich_mobile/widgets/common/person_sliver_app_bar.dart';
 
 @RoutePage()
@@ -49,25 +52,70 @@ class _DriftPersonPageState extends ConsumerState<DriftPersonPage> {
     }
   }
 
-  void showOptionSheet(BuildContext context) {
+  void showOptionSheet(BuildContext pageContext) {
+    bool shouldNavigateBack = false;
+
     showModalBottomSheet(
-      context: context,
-      backgroundColor: context.colorScheme.surface,
+      context: pageContext,
+      backgroundColor: Theme.of(pageContext).colorScheme.surface,
       isScrollControlled: false,
-      builder: (context) {
+      builder: (sheetContext) {
         return PersonOptionSheet(
           onEditName: () async {
-            await handleEditName(context);
-            ContextHelper(context).pop();
+            await handleEditName(sheetContext);
+            Navigator.of(sheetContext).pop();
           },
           onEditBirthday: () async {
-            await handleEditBirthday(context);
-            ContextHelper(context).pop();
+            await handleEditBirthday(sheetContext);
+            Navigator.of(sheetContext).pop();
+          },
+          onHidePerson: () async {
+            shouldNavigateBack = await handleHidePerson(sheetContext);
+            Navigator.of(sheetContext).pop();
+          },
+          onMergePerson: () async {
+            Navigator.of(sheetContext).pop();
+            final result = await pageContext.pushRoute<bool>(DriftMergePeopleRoute(personId: _person.id));
+            if (result == true && pageContext.mounted) {
+              ref.invalidate(driftGetAllPeopleProvider);
+              pageContext.router.pop();
+            }
           },
           birthdayExists: _person.birthDate != null,
+          isHidden: _person.isHidden,
         );
       },
-    );
+    ).then((_) {
+      if (shouldNavigateBack && pageContext.mounted) {
+        ref.invalidate(driftGetAllPeopleProvider);
+        pageContext.router.pop();
+      }
+    });
+  }
+
+  Future<bool> handleHidePerson(BuildContext context) async {
+    final peopleService = ref.read(driftPeopleServiceProvider);
+    final isHidden = !_person.isHidden;
+    final result = await peopleService.hidePerson(_person.id);
+
+    if (!result) {
+      if (context.mounted) {
+        ImmichToast.show(
+          context: context,
+          msg: 'errors.unable_to_hide_person'.t(context: context),
+          toastType: ToastType.error,
+        );
+      }
+      return false;
+    }
+
+    if (context.mounted) {
+      setState(() {
+        _person = _person.copyWith(isHidden: isHidden);
+      });
+    }
+
+    return isHidden;
   }
 
   @override

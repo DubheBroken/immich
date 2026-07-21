@@ -822,6 +822,53 @@ class DriftMemoryRouteArgs {
 }
 
 /// generated route for
+/// [DriftMergePeoplePage]
+class DriftMergePeopleRoute extends PageRouteInfo<DriftMergePeopleRouteArgs> {
+  DriftMergePeopleRoute({
+    Key? key,
+    required String personId,
+    List<PageRouteInfo>? children,
+  }) : super(
+         DriftMergePeopleRoute.name,
+         args: DriftMergePeopleRouteArgs(key: key, personId: personId),
+         initialChildren: children,
+       );
+
+  static const String name = 'DriftMergePeopleRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<DriftMergePeopleRouteArgs>();
+      return DriftMergePeoplePage(key: args.key, personId: args.personId);
+    },
+  );
+}
+
+class DriftMergePeopleRouteArgs {
+  const DriftMergePeopleRouteArgs({this.key, required this.personId});
+
+  final Key? key;
+
+  final String personId;
+
+  @override
+  String toString() {
+    return 'DriftMergePeopleRouteArgs{key: $key, personId: $personId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DriftMergePeopleRouteArgs) return false;
+    return key == other.key && personId == other.personId;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ personId.hashCode;
+}
+
+/// generated route for
 /// [DriftPartnerDetailPage]
 class DriftPartnerDetailRoute
     extends PageRouteInfo<DriftPartnerDetailRouteArgs> {

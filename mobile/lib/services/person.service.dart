@@ -29,4 +29,31 @@ class PersonService {
     }
     return null;
   }
+
+  Future<PersonDto?> hidePerson(String id) async {
+    try {
+      return await _personApiRepository.updateVisibility(id, isHidden: true);
+    } catch (error, stack) {
+      _log.severe("Error while hiding person", error, stack);
+    }
+    return null;
+  }
+
+  Future<PersonDto?> showPerson(String id) async {
+    try {
+      return await _personApiRepository.updateVisibility(id, isHidden: false);
+    } catch (error, stack) {
+      _log.severe("Error while showing person", error, stack);
+    }
+    return null;
+  }
+
+  Future<bool> mergePerson(String targetPersonId, List<String> sourcePersonIds) async {
+    try {
+      return await _personApiRepository.merge(targetPersonId, sourcePersonIds);
+    } catch (error, stack) {
+      _log.severe("Error while merging people", error, stack);
+    }
+    return false;
+  }
 }
