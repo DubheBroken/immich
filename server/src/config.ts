@@ -293,7 +293,7 @@ export const defaults = Object.freeze<SystemConfig>({
   },
   machineLearning: {
     enabled: process.env.IMMICH_MACHINE_LEARNING_ENABLED !== 'false',
-    urls: [process.env.IMMICH_MACHINE_LEARNING_URL || 'http://immich-machine-learning:3003'],
+    urls: [process.env.IMMICH_MACHINE_LEARNING_URL || 'https://immich-machine-learning:3003'],
     availabilityChecks: {
       enabled: true,
       timeout: 2000,
