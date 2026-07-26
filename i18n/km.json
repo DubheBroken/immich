@@ -87,5 +87,9 @@
     "image_fullsize_enabled": "បើកការបង្កើតរូបភាពទំហំពេញ",
     "image_fullsize_enabled_description": "បង្កើតរូបភាពទំហំពេញសម្រាប់ទម្រង់ដែលមិនមែនជា Web-friendly។ នៅពេលដែល \"Prefer embedded preview\" ត្រូវបានបើក ការមើលជាមុនដែលបានបង្កប់ត្រូវបានប្រើប្រាស់ដោយផ្ទាល់ដោយគ្មានការបម្លែង។ មិនប៉ះពាល់ដល់ទម្រង់ Web-friendly ដូចជា JPEG ទេ។",
     "image_fullsize_quality_description": "គុណភាពរូបភាពទំហំពេញពី 1-100។ ខ្ពស់ជាងគឺល្អជាង ប៉ុន្តែបង្កើតឯកសារធំជាង។"
-  }
+  },
+  "face_merge_confirmation_title": "បញ្ចូលគ្នាជាមួយមនុស្សដែលមានស្រាប់?",
+  "face_merge_confirmation_message": "មានមនុស្សឈ្មោះ \"{name}\" រួចហើយ។ តើអ្នកចង់បញ្ចូលពួកគេទេ?",
+  "face_merge_confirm": "បញ្ចូល",
+  "face_merge_keep_separate": "រក្សាដោយឡែក"
 }

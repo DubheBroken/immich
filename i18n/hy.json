@@ -121,5 +121,9 @@
   "wrong_pin_code": "Սխալ ՊԻՆ կոդ",
   "year": "Տարի",
   "yes": "Այո",
-  "your_wifi_name": "Ձեր Wi-Fi անունը"
+  "your_wifi_name": "Ձեր Wi-Fi անունը",
+  "face_merge_confirmation_title": "Միավորել գոյություն ունեցող անձի հետ?",
+  "face_merge_confirmation_message": "\"{name}\" անունով անձ արդեն գոյություն ունի: Ցանկանու՞մ եք միավորել նրանց:",
+  "face_merge_confirm": "Միավորել",
+  "face_merge_keep_separate": "Պահել առանձին"
 }

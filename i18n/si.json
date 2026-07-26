@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "පවතින පුද්ගලයා සමඟ ඒකාබද්ධ කරන්න?",
+  "face_merge_confirmation_message": "\"{name}\" නම් පුද්ගලයෙක් දැනටමත් සිටී. ඔබට ඔවුන් ඒකාබද්ධ කිරීමට අවශ්‍යද?",
+  "face_merge_confirm": "ඒකාබද්ධ කරන්න",
+  "face_merge_keep_separate": "වෙන්ව තබා ගන්න"
+}

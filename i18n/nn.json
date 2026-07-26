@@ -605,5 +605,9 @@
   "year": "År",
   "years_ago": "{years, plural, one {# År} other {# År}} sidan",
   "yes": "Ja",
-  "zoom_image": "Forstørr bilete"
+  "zoom_image": "Forstørr bilete",
+  "face_merge_confirmation_title": "Slå saman med eksisterande person?",
+  "face_merge_confirmation_message": "Ein person med namnet \"{name}\" finst allereie. Vil du slå dei saman?",
+  "face_merge_confirm": "Slå saman",
+  "face_merge_keep_separate": "Halde separate"
 }

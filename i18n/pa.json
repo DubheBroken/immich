@@ -15,5 +15,9 @@
   "add_birthday": "ਜਨਮਦਿਨ ਸ਼ਾਮਲ ਕਰੋ",
   "add_endpoint": "ਐਂਡਪੁਆਇੰਟ ਸ਼ਾਮਲ ਕਰੋ",
   "add_exclusion_pattern": "ਅਲਹਿਦਗੀ ਪੈਟਰਨ ਸ਼ਾਮਲ ਕਰੋ",
-  "add_location": "ਸਥਾਨ ਸ਼ਾਮਲ ਕਰੋ"
+  "add_location": "ਸਥਾਨ ਸ਼ਾਮਲ ਕਰੋ",
+  "face_merge_confirmation_title": "ਮੌਜੂਦਾ ਵਿਅਕਤੀ ਨਾਲ ਮਰਜ ਕਰੀਏ?",
+  "face_merge_confirmation_message": "\"{name}\" ਨਾਂ ਦਾ ਵਿਅਕਤੀ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਹੈ। ਕੀ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਮਰਜ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+  "face_merge_confirm": "ਮਰਜ ਕਰੋ",
+  "face_merge_keep_separate": "ਵੱਖ ਰੱਖੋ"
 }

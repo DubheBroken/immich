@@ -86,5 +86,9 @@
   "sharing_enter_password": "Ку питне курма пароль кӗртӗр.",
   "user_usage_stats": "Шута ҫырни усӑ курмалли статистика",
   "user_usage_stats_description": "Шута ҫырни усӑ курмалли статистикӑна пӑхасси",
-  "utilities": "Пулӑшакансем"
+  "utilities": "Пулӑшакансем",
+  "face_merge_confirmation_title": "Пур çынпа пĕрлештересси?",
+  "face_merge_confirmation_message": "\"{name}\" ятлă çын ĕнтĕ пур. Вĕсене пĕрлештересшĕн-и?",
+  "face_merge_confirm": "Пĕрлештер",
+  "face_merge_keep_separate": "Уйрăм хăвар"
 }

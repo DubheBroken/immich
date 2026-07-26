@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Sdukkel akked wemdan yellan?",
+  "face_merge_confirmation_message": "Yella yakan wemdan isem-is \"{name}\". Tebɣiḍ ad ten-tdukkleḍ?",
+  "face_merge_confirm": "Sdukkel",
+  "face_merge_keep_separate": "Ḥrez-iten gerraj"
+}

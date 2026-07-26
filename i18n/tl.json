@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Isama sa kasalukuyang tao?",
+  "face_merge_confirmation_message": "May tao na nagngangalang \"{name}\" na. Gusto mo bang isama sila?",
+  "face_merge_confirm": "Isama",
+  "face_merge_keep_separate": "Panatilihing hiwalay"
+}

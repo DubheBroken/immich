@@ -90,5 +90,9 @@
     "image_preview_quality_description": "પ્રીવ્યૂ ગુણવત્તા ૧-૧૦૦ સુધી. ઉચ્ચ વધુ સારું છે, પરંતુ તે મોટી ફાઇલો ઉત્પન્ન કરે છે અને એપ્લિકેશન પ્રતિભાવ ઘટાડી શકે છે. ઓછું મૂલ્ય સેટ કરવાથી મશીન લર્નિંગ ગુણવત્તા પર અસર પડી શકે છે.",
     "image_preview_title": "પૂર્વાવલોકન સેટિંગ્સ",
     "image_progressive": "પ્રગતિશીલ"
-  }
+  },
+  "face_merge_confirmation_title": "હાલની વ્યક્તિ સાથે મર્જ કરો?",
+  "face_merge_confirmation_message": "\"{name}\" નામની વ્યક્તિ પહેલેથી અસ્તિત્વ ધરાવે છે. શું તમે તેમને મર્જ કરવા માંગો છો?",
+  "face_merge_confirm": "મર્જ કરો",
+  "face_merge_keep_separate": "અલગ રાખો"
 }

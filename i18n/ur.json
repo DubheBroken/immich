@@ -107,5 +107,9 @@
   "waiting": "انتظار",
   "week": "ہفتہ",
   "year": "سال",
-  "zoom_image": "زوم تصویر"
+  "zoom_image": "زوم تصویر",
+  "face_merge_confirmation_title": "موجودہ شخص کے ساتھ ضم کریں؟",
+  "face_merge_confirmation_message": "\"{name}\" نام کا ایک شخص پہلے سے موجود ہے۔ کیا آپ انہیں ضم کرنا چاہتے ہیں؟",
+  "face_merge_confirm": "ضم کریں",
+  "face_merge_keep_separate": "الگ رکھیں"
 }

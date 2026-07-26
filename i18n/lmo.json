@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Fusión cun la persona esistenta?",
+  "face_merge_confirmation_message": "Una persona ciamada \"{name}\" la gh'è già. Te voeuret fonder?",
+  "face_merge_confirm": "Fond",
+  "face_merge_keep_separate": "Mantegnì separad"
+}

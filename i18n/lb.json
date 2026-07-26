@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Mat bestoender Persoun zesumme féieren?",
+  "face_merge_confirmation_message": "Eng Persoun mam Numm \"{name}\" gëtt et scho. Wëlls de se zesumme féieren?",
+  "face_merge_confirm": "Zesumme féieren",
+  "face_merge_keep_separate": "Getrennt halen"
+}

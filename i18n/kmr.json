@@ -2,5 +2,9 @@
   "about": "دەربارە",
   "account": "هەژمار",
   "account_settings": "ڕێکخستنی هەژمار",
-  "acknowledge": "دانپێدانان"
+  "acknowledge": "دانپێدانان",
+  "face_merge_confirmation_title": "Bi kesê heyî re bibe yek?",
+  "face_merge_confirmation_message": "Kesek bi navê \"{name}\" jixwe heye. Tu dixwazî wan bike yek?",
+  "face_merge_confirm": "Bibe yek",
+  "face_merge_keep_separate": "Ji hev cuda bihêle"
 }

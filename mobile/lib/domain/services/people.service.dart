@@ -25,6 +25,10 @@ class DriftPeopleService {
     return _repository.getAllPeople(minFaces: minFaces);
   }
 
+  Future<List<DriftPerson>> getPeopleByName(String name, {String? excludePersonId}) {
+    return _repository.getPeopleByName(name, excludePersonId: excludePersonId);
+  }
+
   Future<int> updateName(String personId, String name) async {
     await _personApiRepository.update(personId, name: name);
     return _repository.updateName(personId, name);
@@ -57,6 +61,7 @@ class DriftPeopleService {
     try {
       final result = await _personApiRepository.merge(targetPersonId, sourcePersonIds);
       if (result) {
+        await _repository.reassignFaces(targetPersonId, sourcePersonIds);
         for (final sourceId in sourcePersonIds) {
           await _repository.deletePerson(sourceId);
         }

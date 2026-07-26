@@ -5,6 +5,7 @@ import 'package:immich_mobile/domain/models/person.model.dart';
 import 'package:immich_mobile/extensions/translate_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/people/person_option_sheet.widget.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/timeline.widget.dart';
+import 'package:immich_mobile/providers/background_sync.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/people.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
@@ -33,11 +34,20 @@ class _DriftPersonPageState extends ConsumerState<DriftPersonPage> {
   }
 
   Future<void> handleEditName(BuildContext context) async {
-    final newName = await showNameEditModal(context, _person);
+    final result = await showNameEditModal(context, _person);
 
-    if (newName != null && newName.isNotEmpty) {
+    if (result == nameEditMergeDone) {
+      await ref.read(backgroundSyncProvider).syncRemote();
+      ref.invalidate(driftGetAllPeopleProvider);
+      if (context.mounted) {
+        context.router.pop();
+      }
+      return;
+    }
+
+    if (result is String && result.isNotEmpty) {
       setState(() {
-        _person = _person.copyWith(name: newName);
+        _person = _person.copyWith(name: result);
       });
     }
   }

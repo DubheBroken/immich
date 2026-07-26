@@ -974,5 +974,9 @@
   "version": "Versioni",
   "you_dont_have_any_shared_links": "Nuk keni asnjë link të shpërndarë",
   "your_wifi_name": "Emri i Wi-Fi tuaj",
-  "zoom_image": "Zmadho imazhin"
+  "zoom_image": "Zmadho imazhin",
+  "face_merge_confirmation_title": "Bashko me personin ekzistues?",
+  "face_merge_confirmation_message": "Një person me emrin \"{name}\" ekziston tashmë. Dëshiron t'i bashkosh?",
+  "face_merge_confirm": "Bashko",
+  "face_merge_keep_separate": "Mbaj të ndarë"
 }

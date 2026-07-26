@@ -11,5 +11,9 @@
   "active_count": "Faol: {count}",
   "activity": "Harakatlar",
   "add": "Qoʻshish",
-  "add_a_description": "Tavsif kiriting"
+  "add_a_description": "Tavsif kiriting",
+  "face_merge_confirmation_title": "Mavjud shaxs bilan birlashtirilsinmi?",
+  "face_merge_confirmation_message": "\"{name}\" ismli shaxs allaqachon mavjud. Ularni birlashtirishni xohlaysizmi?",
+  "face_merge_confirm": "Birlashtirish",
+  "face_merge_keep_separate": "Alohida saqlash"
 }

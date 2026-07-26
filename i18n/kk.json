@@ -21,5 +21,9 @@
   "admin": {
     "create_job": "Жұмысты бастау"
   },
-  "zoom_image": "суретті үлкейту"
+  "zoom_image": "суретті үлкейту",
+  "face_merge_confirmation_title": "Бар адаммен біріктіру?",
+  "face_merge_confirmation_message": "\"{name}\" деген атпен адам бар. Оларды біріктіргіңіз келе ме?",
+  "face_merge_confirm": "Біріктіру",
+  "face_merge_keep_separate": "Бөлек сақтау"
 }

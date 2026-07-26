@@ -4,6 +4,9 @@ import 'package:immich_mobile/extensions/translate_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/people/person_edit_birthday_modal.widget.dart';
 import 'package:immich_mobile/presentation/widgets/people/person_edit_name_modal.widget.dart';
 
+/// Signal value returned by [showNameEditModal] when a merge happened.
+const nameEditMergeDone = '\x00__merge_done__';
+
 String formatAge(DateTime birthDate, DateTime referenceDate) {
   int ageInYears = _calculateAge(birthDate, referenceDate);
   int ageInMonths = _calculateAgeInMonths(birthDate, referenceDate);
@@ -33,8 +36,11 @@ int _calculateAgeInMonths(DateTime birthDate, DateTime referenceDate) {
       (referenceDate.day < birthDate.day ? 1 : 0);
 }
 
-Future<String?> showNameEditModal(BuildContext context, DriftPerson person) {
-  return showDialog<String?>(
+/// Returns the new name on successful edit, [nameEditMergeDone] when a merge
+/// occurred (caller should navigate back to trigger a full refresh), or null
+/// if the user cancelled.
+Future<Object?> showNameEditModal(BuildContext context, DriftPerson person) {
+  return showDialog<Object?>(
     context: context,
     useRootNavigator: false,
     builder: (BuildContext context) {

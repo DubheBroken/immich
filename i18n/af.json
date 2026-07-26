@@ -293,5 +293,9 @@
   "you_dont_have_any_shared_links": "U het geen gedeelde skakels nie",
   "your_wifi_name": "U Wi-Fi-naam",
   "zero_to_clear_rating": "druk 0 om itemgradering te wis",
-  "zoom_image": "Zoem in"
+  "zoom_image": "Zoem in",
+  "face_merge_confirmation_title": "Saamsmelt met bestaande persoon?",
+  "face_merge_confirmation_message": "'n Persoon met die naam \"{name}\" bestaan reeds. Wil jy hulle saamsmelt?",
+  "face_merge_confirm": "Saamsmelt",
+  "face_merge_keep_separate": "Hou apart"
 }

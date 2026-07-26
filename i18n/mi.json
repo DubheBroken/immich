@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Whakakotahi ki te tangata o naianei?",
+  "face_merge_confirmation_message": "He tangata ko \"{name}\" te ingoa kei te noho mai. Kei te pirangi koe ki te whakakotahi?",
+  "face_merge_confirm": "Whakakotahi",
+  "face_merge_keep_separate": "Puru wehe"
+}

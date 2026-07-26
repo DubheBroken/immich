@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Kendeiñ gant un den zo dija?",
+  "face_merge_confirmation_message": "Un den anvet \"{name}\" zo dija. Ha c'hoant hoc'h eus d'o chendeìñ?",
+  "face_merge_confirm": "Kendeiñ",
+  "face_merge_keep_separate": "Mirout disparti"
+}

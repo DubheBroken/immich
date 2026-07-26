@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/domain/models/person.model.dart';
+import 'package:immich_mobile/infrastructure/entities/asset_face.entity.drift.dart';
 import 'package:immich_mobile/infrastructure/entities/person.entity.drift.dart';
 import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
@@ -78,6 +79,27 @@ class DriftPeopleRepository extends DriftDatabaseRepository {
     final query = _db.update(_db.personEntity)..where((row) => row.id.equals(personId));
 
     return query.write(PersonEntityCompanion(isHidden: Value(isHidden), updatedAt: Value(DateTime.now())));
+  }
+
+  Future<List<DriftPerson>> getPeopleByName(String name, {String? excludePersonId}) {
+    final query = _db.select(_db.personEntity)
+      ..where((row) {
+        final condition = row.name.equals(name);
+        if (excludePersonId != null) {
+          return condition & row.id.equals(excludePersonId).not();
+        }
+        return condition;
+      });
+
+    return query.map((row) => row.toDto()).get();
+  }
+
+  Future<void> reassignFaces(String targetPersonId, List<String> sourcePersonIds) async {
+    for (final sourceId in sourcePersonIds) {
+      final query = _db.update(_db.assetFaceEntity)
+        ..where((row) => row.personId.equals(sourceId));
+      await query.write(AssetFaceEntityCompanion(personId: Value(targetPersonId)));
+    }
   }
 
   Future<int> deletePerson(String personId) {

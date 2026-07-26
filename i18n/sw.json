@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Unganisha na mtu aliyepo?",
+  "face_merge_confirmation_message": "Mtu anayeitwa \"{name}\" tayari yupo. Unataka kuwaunganisha?",
+  "face_merge_confirm": "Unganisha",
+  "face_merge_keep_separate": "Weka mbali"
+}

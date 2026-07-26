@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Spojiti sa postojećom osobom?",
+  "face_merge_confirmation_message": "Osoba po imenu \"{name}\" već postoji. Želite li ih spojiti?",
+  "face_merge_confirm": "Spoji",
+  "face_merge_keep_separate": "Zadrži odvojeno"
+}

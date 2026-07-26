@@ -166,5 +166,9 @@
   "view_all": "Alles aazeige",
   "view_all_users": "Alli Nutzer aazeige",
   "view_details": "Details aaluege",
-  "view_link": "Link aazeige"
+  "view_link": "Link aazeige",
+  "face_merge_confirmation_title": "Mit vorhandener Person zämmefüehre?",
+  "face_merge_confirmation_message": "En Person mit Name \"{name}\" gitts scho. Wetsch si zämmefüehre?",
+  "face_merge_confirm": "Zämmefüehre",
+  "face_merge_keep_separate": "Trennt lah"
 }

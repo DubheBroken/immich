@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Mergem dengan orang yang ada?",
+  "face_merge_confirmation_message": "Orang bernama \"{name}\" sudah ada. Awak nak mergem diorang?",
+  "face_merge_confirm": "Mergem",
+  "face_merge_keep_separate": "Biase asing"
+}

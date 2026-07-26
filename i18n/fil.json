@@ -109,5 +109,9 @@
   "shared_link_edit_expire_after_option_months": "{count} buwan",
   "shared_link_edit_expire_after_option_year": "{count} taon",
   "shared_link_edit_password_hint": "I-enter ang share password",
-  "year": "Taon"
+  "year": "Taon",
+  "face_merge_confirmation_title": "Isama sa kasalukuyang tao?",
+  "face_merge_confirmation_message": "May isang tao na nagngangalang \"{name}\" na. Gusto mo bang isama sila?",
+  "face_merge_confirm": "Isama",
+  "face_merge_keep_separate": "Panatilihing hiwalay"
 }

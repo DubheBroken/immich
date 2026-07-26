@@ -823,5 +823,9 @@
   "welcome": "خوش آمدید",
   "year": "سال",
   "yes": "بله",
-  "zoom_image": "بزرگنمایی تصویر"
+  "zoom_image": "بزرگنمایی تصویر",
+  "face_merge_confirmation_title": "ادغام با شخص موجود؟",
+  "face_merge_confirmation_message": "شخصی به نام \"{name}\" از قبل وجود دارد. می‌خواهید آنها را ادغام کنید؟",
+  "face_merge_confirm": "ادغام",
+  "face_merge_keep_separate": "جدا نگه دار"
 }

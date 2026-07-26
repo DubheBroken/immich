@@ -624,5 +624,9 @@
   "you_dont_have_any_shared_links": "আপনার কোনো শেয়ার করা লিঙ্ক নেই (You don't have any shared links)",
   "your_wifi_name": "আপনার ওয়াই-ফাই এর নাম (Your Wi-Fi name)",
   "zero_to_clear_rating": "অ্যাসেট রেটিং মুছে ফেলতে ০ চাপুন",
-  "zoom_image": "ছবি জুম করুন (Zoom Image)"
+  "zoom_image": "ছবি জুম করুন (Zoom Image)",
+  "face_merge_confirmation_title": "বিদ্যমান ব্যক্তির সাথে একত্রিত করবেন?",
+  "face_merge_confirmation_message": "\"{name}\" নামে একজন ব্যক্তি ইতিমধ্যে বিদ্যমান। আপনি কি তাদের একত্রিত করতে চান?",
+  "face_merge_confirm": "একত্রিত করুন",
+  "face_merge_keep_separate": "পৃথক রাখুন"
 }

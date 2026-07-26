@@ -1,1 +1,6 @@
-{}
+{
+  "face_merge_confirmation_title": "Mit em vorhandene Mensch zammefüage?",
+  "face_merge_confirmation_message": "En Mensch mit Nama \"{name}\" gibt s scho. Willsch se zammefüage?",
+  "face_merge_confirm": "Zammefüage",
+  "face_merge_keep_separate": "Trennt halt"
+}
