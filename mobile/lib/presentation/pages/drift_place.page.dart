@@ -6,6 +6,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/extensions/translate_extensions.dart';
 import 'package:immich_mobile/pages/common/large_leading_tile.dart';
 import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart';
+import 'package:immich_mobile/providers/background_sync.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/common/search_field.dart';
@@ -13,25 +14,38 @@ import 'package:immich_mobile/widgets/map/map_thumbnail.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 @RoutePage()
-class DriftPlacePage extends StatelessWidget {
+class DriftPlacePage extends ConsumerStatefulWidget {
   const DriftPlacePage({super.key, this.currentLocation});
 
   final LatLng? currentLocation;
 
   @override
-  Widget build(BuildContext context) {
-    final ValueNotifier<String?> search = ValueNotifier(null);
+  ConsumerState<DriftPlacePage> createState() => _DriftPlacePageState();
+}
 
+class _DriftPlacePageState extends ConsumerState<DriftPlacePage> {
+  final ValueNotifier<String?> _search = ValueNotifier(null);
+
+  Future<void> _onRefresh() async {
+    await ref.read(backgroundSyncProvider).syncRemote();
+    ref.invalidate(placesProvider);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: ValueListenableBuilder(
-        valueListenable: search,
+        valueListenable: _search,
         builder: (context, searchValue, child) {
-          return CustomScrollView(
-            slivers: [
-              _PlaceSliverAppBar(search: search),
-              _Map(search: search, currentLocation: currentLocation),
-              _PlaceList(search: search),
-            ],
+          return RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: CustomScrollView(
+              slivers: [
+                _PlaceSliverAppBar(search: _search),
+                _Map(search: _search, currentLocation: widget.currentLocation),
+                _PlaceList(search: _search),
+              ],
+            ),
           );
         },
       ),
