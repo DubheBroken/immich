@@ -1336,6 +1336,7 @@
   "merge": "Apvienot",
   "merge_people": "Personu apvienošana",
   "merge_people_limit": "Vienlaikus var apvienot ne vairāk kā 5 sejas",
+  "merge_name_different": "Atlasītajām personām ir dažādi vārdi. Kuru vārdu vēlies paturēt?",
   "merge_people_prompt": "Vai vēlies apvienot šīs personas? Šī darbība ir neatceļama.",
   "merge_people_successfully": "Personas veiksmīgi apvienotas",
   "merged_people_count": "Apvienoti {count, plural, one {# person} other {# people}}",

@@ -1418,6 +1418,7 @@
   "merge": "الدمج",
   "merge_people": "دمج الأشخاص",
   "merge_people_limit": "يمكنك دمج حتى 5 وجوه فقط في المرة الواحدة",
+  "merge_name_different": "الأشخاص المحددون لديهم أسماء مختلفة. ما الاسم الذي تريد الاحتفاظ به؟",
   "merge_people_prompt": "هل تريد دمج هؤلاء الناس؟ هذا الإجراء لا رجعة فيه.",
   "merge_people_successfully": "تم دمج الأشخاص بنجاح",
   "merged_people_count": "دمج {count, plural, one {شخص واحد} other {# أشخاص}}",

@@ -1439,6 +1439,7 @@
   "merge": "Zusammenführen",
   "merge_people": "Personen zusammenführen",
   "merge_people_limit": "Du kannst maximal 5 Gesichter auf einmal zusammenführen",
+  "merge_name_different": "Die ausgewählten Personen haben unterschiedliche Namen. Welchen Namen möchtest du behalten?",
   "merge_people_prompt": "Willst du diese Personen zusammenführen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "merge_people_successfully": "Personen erfolgreich zusammengeführt",
   "merged_people_count": "{count, plural, one {# Person} other {# Personen}} zusammengefügt",

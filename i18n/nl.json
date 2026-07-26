@@ -1439,6 +1439,7 @@
   "merge": "Samenvoegen",
   "merge_people": "Mensen samenvoegen",
   "merge_people_limit": "Je kunt maximaal 5 gezichten tegelijk samenvoegen",
+  "merge_name_different": "De geselecteerde personen hebben verschillende namen. Welke naam wil je behouden?",
   "merge_people_prompt": "Wil je deze mensen samenvoegen? Deze actie is onomkeerbaar.",
   "merge_people_successfully": "Mensen succesvol samengevoegd",
   "merged_people_count": "{count, plural, one {# person} other {# mensen}} samengevoegd",

@@ -1439,6 +1439,7 @@
   "merge": "Batu",
   "merge_people": "Pertsonak batu",
   "merge_people_limit": "5 aurpegi gehienez batu ditzakezu aldi berean",
+  "merge_name_different": "Hautatutako pertsonek izen desberdinak dituzte. Zein izen gorde nahi duzu?",
   "merge_people_prompt": "Pertsona hauek batu nahi dituzu? Ekintza hau ezin da desegin.",
   "merge_people_successfully": "Pertsonak arrakastaz batuta",
   "merged_people_count": "{count, plural, one {Pertsona bat fusionatu da} other {# pertsona fusionatu dira}}",

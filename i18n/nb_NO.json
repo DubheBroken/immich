@@ -1433,6 +1433,7 @@
   "merge": "Slå sammen",
   "merge_people": "Slå sammen personer",
   "merge_people_limit": "Du kan bare slå sammen opp til 5 fjes om gangen",
+  "merge_name_different": "De valgte personene har forskjellige navn. Hvilket navn vil du beholde?",
   "merge_people_prompt": "Vil du slå sammen disse personene? Denne handlingen kan ikke reverseres.",
   "merge_people_successfully": "Sammenslåing av personer var vellykket",
   "merged_people_count": "Sammenslått {count, plural, one {# person} other {# people}}",

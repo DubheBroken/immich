@@ -1238,6 +1238,7 @@
   "merge": "Zämmefüehre",
   "merge_people": "Persone Zämmefüehre",
   "merge_people_limit": "Du chasch maximal 5 Gsichter uf einisch zämmefüehre",
+  "merge_name_different": "Die usgwählte Persone händ verschideni Näme. Welche Name wotsch bhalte?",
   "merge_people_prompt": "Wotsch die Persone zämmefüehre? Die Aktion cha nöd rückgängig gmacht werde.",
   "merge_people_successfully": "Persone erfolgrich zämmegführt",
   "merged_people_count": "{count, plural, one {# Person} other {# Persone}} zämmegfüegt",

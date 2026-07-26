@@ -1429,6 +1429,7 @@
   "merge": "Kunfandi",
   "merge_people": "Kunfandi homojn",
   "merge_people_limit": "Eblas kunfandi nur 5 vizaĝojn samtempe",
+  "merge_name_different": "La elektitaj homoj havas malsamajn nomojn. Kiun nomon vi volas konservi?",
   "merge_people_prompt": "Ĉu vi volas kunfandi tiujn homojn? Ne eblos malfari tion poste.",
   "merge_people_successfully": "Homoj sukcese kunfanditaj",
   "merged_people_count": "Kunfandiĝis {count, plural, one {# homo} other {# homoj}}",

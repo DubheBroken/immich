@@ -1428,6 +1428,7 @@
   "merge": "Sammenflet",
   "merge_people": "Sammenflet personer",
   "merge_people_limit": "Du kan kun flette op til 5 ansigter ad gangen",
+  "merge_name_different": "De valgte personer har forskellige navne. Hvilket navn vil du beholde?",
   "merge_people_prompt": "Vil du flette disse mennesker sammen? Denne handling er uigenkaldelig.",
   "merge_people_successfully": "Personer sammenflettet med succes",
   "merged_people_count": "{count, plural, one {# person} other {# personer}} lagt sammen",

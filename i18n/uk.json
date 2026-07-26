@@ -1439,6 +1439,7 @@
   "merge": "Об'єднати",
   "merge_people": "Об'єднати людей",
   "merge_people_limit": "Ви можете об'єднати до 5 облич одночасно",
+  "merge_name_different": "У вибраних людей різні імена. Яке ім'я ви хочете залишити?",
   "merge_people_prompt": "Ви хочете об'єднати цих людей? Ця дія незворотна.",
   "merge_people_successfully": "Людей об'єднано",
   "merged_people_count": "Об'єднано {count, plural, one {# людину} few {# людини} many {# людей} other {# людей}}",

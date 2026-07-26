@@ -1228,6 +1228,7 @@
   "merge": "Spoji",
   "merge_people": "Spoji osobe",
   "merge_people_limit": "Možete spojiti najviše 5 lica od jednom",
+  "merge_name_different": "Izabrane osobe imaju različita imena. Koje ime želite da zadržite?",
   "merge_people_prompt": "Da li želite da spojite ove osobe? Ovaj potez se ne može povratiti.",
   "merge_people_successfully": "Spajanje osoba uspešno",
   "merged_people_count": "Spojeno {count, plural, one {# osoba} other {# osobe}}",

@@ -1365,6 +1365,7 @@
   "merge": "מזג",
   "merge_people": "מזג אנשים",
   "merge_people_limit": "באפשרותך למזג רק עד 5 פנים בכל פעם",
+  "merge_name_different": "לאנשים שנבחרו יש שמות שונים. איזה שם תרצה לשמור?",
   "merge_people_prompt": "האם ברצונך למזג את האנשים האלה? פעולה זו היא בלתי הפיכה.",
   "merge_people_successfully": "מיזוג אנשים בוצע בהצלחה",
   "merged_people_count": "{count, plural, one {אדם # מוזג} other {# אנשים מוזגו}}",

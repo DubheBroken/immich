@@ -1322,6 +1322,7 @@
   "merge": "मर्ज",
   "merge_people": "लोगों को मिलाओ",
   "merge_people_limit": "आप एक समय में अधिकतम 5 चेहरों को ही मर्ज कर सकते हैं",
+  "merge_name_different": "चयनित लोगों के अलग-अलग नाम हैं। आप कौन सा नाम रखना चाहते हैं?",
   "merge_people_prompt": "क्या आप इन लोगों का विलय करना चाहते हैं? यह कार्रवाई अपरिवर्तनीय है।",
   "merge_people_successfully": "लोगों को सफलतापूर्वक मर्ज करें",
   "merged_people_count": "विलयित {count, plural, one {# person} other {# people}}",

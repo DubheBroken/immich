@@ -1356,6 +1356,7 @@
   "merge": "รวม",
   "merge_people": "รวมผู้คน",
   "merge_people_limit": "คุณรวมใบหน้าได้มากถึง 5 รูปต่อครั้ง",
+  "merge_name_different": "บุคคลที่เลือกมีชื่อต่างกัน คุณต้องการใช้ชื่อใด",
   "merge_people_prompt": "คุณต้องการรวมบุคคลเหล่านี้หรือไม่ การกระทำนี้ไม่สามารถย้อนกลับได้",
   "merge_people_successfully": "รวมผู้คนเรียบร้อยแล้ว",
   "merged_people_count": "รวม {count, plural, one {# คน} other {# คน}}เข้าด้วยกันแล้ว",

@@ -1439,6 +1439,7 @@
   "merge": "Złącz",
   "merge_people": "Złącz osoby",
   "merge_people_limit": "Możesz łączyć maksymalnie 5 twarzy naraz",
+  "merge_name_different": "Wybrane osoby mają różne nazwy. Której nazwy chcesz użyć?",
   "merge_people_prompt": "Czy chcesz połączyć te osoby? Ta czynność jest nieodwracalna.",
   "merge_people_successfully": "Pomyślnie złączono osoby",
   "merged_people_count": "Połączono {count, plural, one {# osobę} few {# osoby} other {# osób}}",

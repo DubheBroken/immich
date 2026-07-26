@@ -1439,6 +1439,7 @@
   "merge": "Cumaisc",
   "merge_people": "Daoine a chumasc",
   "merge_people_limit": "Ní féidir leat ach suas le 5 aghaidh a chumasc ag an am céanna",
+  "merge_name_different": "Tá ainmneacha difriúla ar na daoine a roghnaíodh. Cén t-ainm ar mhaith leat a choinneáil?",
   "merge_people_prompt": "Ar mhaith leat na daoine seo a chumasc? Ní féidir an gníomh seo a aisiompú.",
   "merge_people_successfully": "Daoine a chumasc go rathúil",
   "merged_people_count": "Cumaiscthe {count, plural, one {# duine} other {# daoine}}",

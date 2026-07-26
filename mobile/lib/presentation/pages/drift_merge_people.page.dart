@@ -48,6 +48,45 @@ class _DriftMergePeoplePageState extends ConsumerState<DriftMergePeoplePage> {
       return;
     }
 
+    // Collect all involved persons (target + sources) and resolve name
+    final allPeople = ref.read(driftGetAllPeopleProvider).value;
+    String? resolvedName;
+    if (allPeople != null) {
+      final allIds = [widget.personId, ..._selectedPersonIds];
+      final involved = allPeople.where((p) => allIds.contains(p.id)).toList();
+      final names = involved.map((p) => p.name).where((n) => n.isNotEmpty).toSet().toList();
+
+      if (names.length == 1) {
+        // Only one person has a name — use it for the merge target
+        final targetName = involved.firstWhere((p) => p.id == widget.personId).name;
+        if (targetName.isEmpty) {
+          resolvedName = names.first;
+        }
+      } else if (names.length > 1) {
+        // Multiple different names — ask the user
+        final picked = await showDialog<String>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text('merge_people'.t(context: dialogContext)),
+            content: Text('merge_name_different'.t(context: dialogContext)),
+            actions: [
+              for (final name in names)
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(name),
+                  child: Text(name),
+                ),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(null),
+                child: Text('cancel'.t(context: dialogContext)),
+              ),
+            ],
+          ),
+        );
+        if (picked == null || !context.mounted) return;
+        resolvedName = picked;
+      }
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -80,6 +119,12 @@ class _DriftMergePeoplePageState extends ConsumerState<DriftMergePeoplePage> {
 
     try {
       final peopleService = ref.read(driftPeopleServiceProvider);
+
+      // Update the target person's name if resolved
+      if (resolvedName != null) {
+        await peopleService.updateName(widget.personId, resolvedName);
+      }
+
       final result = await peopleService.mergePerson(widget.personId, _selectedPersonIds);
 
       if (result && mounted) {

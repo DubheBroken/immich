@@ -1439,6 +1439,7 @@
   "merge": "合併",
   "merge_people": "合併人物",
   "merge_people_limit": "一次最多隻能合併 5 張臉孔",
+  "merge_name_different": "所選人物名稱不同，請選擇要保留的名稱。",
   "merge_people_prompt": "您要合併這些人物嗎？此操作無法撤銷。",
   "merge_people_successfully": "成功合併人物",
   "merged_people_count": "已合併 {count, plural, other {# 位人物}}",
