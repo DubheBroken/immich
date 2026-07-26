@@ -13,6 +13,16 @@ if (keystorePropertiesFile.exists()) {
   keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
 }
 
+def getGitShortHash() {
+  try {
+    def process = "git rev-parse --short=8 HEAD".execute(null, project.rootDir)
+    process.waitFor()
+    return process.text.trim()
+  } catch (Exception ignored) {
+    return "unknown"
+  }
+}
+
 android {
   compileSdk = flutter.compileSdkVersion
   ndkVersion = flutter.ndkVersion
@@ -75,6 +85,20 @@ android {
       }
     }
   }
+
+  applicationVariants.all { variant ->
+    variant.outputs.all { output ->
+      def abi = output.getFilter(com.android.build.OutputFile.ABI)
+      def baseName = "immich"
+      if (abi != null && !abi.isEmpty()) {
+        baseName += "-${abi}"
+      }
+      baseName += "-${variant.buildType.name}"
+      def shortHash = getGitShortHash()
+      outputFileName = "${baseName}-${shortHash}.apk"
+    }
+  }
+
   namespace 'app.alextran.immich'
 
   externalNativeBuild {
