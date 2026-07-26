@@ -12,7 +12,7 @@
   let { icon, children, borderBottom = true, title }: Props = $props();
 </script>
 
-<div class="grid w-full grid-cols-[20px_auto_1fr] overflow-hidden px-1 py-0.5" class:border-b={borderBottom} {title}>
+<div class="grid w-full grid-cols-[20px_auto_1fr] px-1 py-0.5" class:border-b={borderBottom} {title}>
   <Icon {icon} size="16" class="self-center text-dark/25" />
 
   {#if title}
@@ -21,7 +21,7 @@
     </Text>
   {/if}
 
-  <div class="justify-self-end overflow-hidden rounded-sm px-1 text-end transition-colors">
+  <div class="rounded-sm px-1 text-end transition-colors">
     <Text size="tiny" class="break-all">
       {@render children?.()}
     </Text>

@@ -27,23 +27,6 @@ import type { MessageFormatter } from 'svelte-i18n';
 import { getAssetResolution, getFileSize } from '$lib/utils/asset-utils';
 import { fromISODateTime, fromISODateTimeUTC } from '$lib/utils/timeline-util';
 
-const truncateMiddle = (path: string, maxLength = 50): string => {
-  if (path.length <= maxLength) {
-    return path;
-  }
-
-  const lastSlash = path.lastIndexOf('/');
-  const tail = lastSlash === -1 ? path : path.slice(lastSlash);
-
-  if (tail.length >= maxLength - 3) {
-    const half = Math.floor((maxLength - 3) / 2);
-    return path.slice(0, half) + '...' + path.slice(-half);
-  }
-
-  const headLength = maxLength - 3 - tail.length;
-  return path.slice(0, headLength) + '...' + tail;
-};
-
 const formatISODateToLocale = (iso: string, locale: string | undefined): string =>
   fromISODateTimeUTC(iso).toLocaleString({ month: 'short', day: 'numeric', year: 'numeric' }, { locale });
 
@@ -72,7 +55,7 @@ const metadataFields = [
     icon: mdiFolderOutline,
     titleKey: 'path',
     keys: ['originalPath'],
-    render: (asset, $t) => truncateMiddle(asset.originalPath) || $t('unknown'),
+    render: (asset, $t) => asset.originalPath || $t('unknown'),
   },
   {
     icon: mdiWeightKilogram,
