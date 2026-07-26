@@ -140,7 +140,10 @@ class MapApi {
   ///
   /// * [double] lon (required):
   ///   Longitude (-180 to 180)
-  Future<Response> reverseGeocodeWithHttpInfo(double lat, double lon, { Future<void>? abortTrigger, }) async {
+  ///
+  /// * [String] language (optional):
+  ///   Language code (e.g., en, zh) for localized names
+  Future<Response> reverseGeocodeWithHttpInfo(double lat, double lon, { String? language, Future<void>? abortTrigger, }) async {
     // ignore: prefer_const_declarations
     final apiPath = r'/map/reverse-geocode';
 
@@ -153,9 +156,11 @@ class MapApi {
 
       queryParams.addAll(_queryParams('', 'lat', lat));
       queryParams.addAll(_queryParams('', 'lon', lon));
+      if (language != null) {
+        queryParams.addAll(_queryParams('', 'language', language));
+      }
 
     const contentTypes = <String>[];
-
 
     return apiClient.invokeAPI(
       apiPath,
@@ -180,8 +185,11 @@ class MapApi {
   ///
   /// * [double] lon (required):
   ///   Longitude (-180 to 180)
-  Future<List<MapReverseGeocodeResponseDto>?> reverseGeocode(double lat, double lon, { Future<void>? abortTrigger, }) async {
-    final response = await reverseGeocodeWithHttpInfo(lat, lon, abortTrigger: abortTrigger,);
+  ///
+  /// * [String] language (optional):
+  ///   Language code (e.g., en, zh) for localized names
+  Future<List<MapReverseGeocodeResponseDto>?> reverseGeocode(double lat, double lon, { String? language, Future<void>? abortTrigger, }) async {
+    final response = await reverseGeocodeWithHttpInfo(lat, lon, language: language, abortTrigger: abortTrigger,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

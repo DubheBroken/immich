@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Headers, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Endpoint, HistoryBuilder } from 'src/decorators';
 import { AuthDto } from 'src/dtos/auth.dto';
@@ -36,7 +36,10 @@ export class MapController {
     description: 'Retrieve location information (e.g., city, country) for given latitude and longitude coordinates.',
     history: new HistoryBuilder().added('v1').beta('v1').stable('v2'),
   })
-  reverseGeocode(@Query() dto: MapReverseGeocodeDto): Promise<MapReverseGeocodeResponseDto[]> {
-    return this.service.reverseGeocode(dto);
+  reverseGeocode(
+    @Query() dto: MapReverseGeocodeDto,
+    @Headers('accept-language') acceptLanguage?: string,
+  ): Promise<MapReverseGeocodeResponseDto[]> {
+    return this.service.reverseGeocode(dto, acceptLanguage);
   }
 }

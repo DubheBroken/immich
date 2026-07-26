@@ -6,6 +6,7 @@ const MapReverseGeocodeSchema = z
   .object({
     lat: z.coerce.number().meta({ format: 'double' }).pipe(latitudeSchema).describe('Latitude (-90 to 90)'),
     lon: z.coerce.number().meta({ format: 'double' }).pipe(longitudeSchema).describe('Longitude (-180 to 180)'),
+    language: z.string().optional().describe('Language code (e.g., en, zh) for localized names'),
   })
   .meta({ id: 'MapReverseGeocodeDto' });
 

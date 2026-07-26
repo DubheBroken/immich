@@ -25,6 +25,7 @@ export interface MapMarkerSearchOptions {
 export interface GeoPoint {
   latitude: number;
   longitude: number;
+  language?: string;
 }
 
 export interface ReverseGeocodeResult {
@@ -148,6 +149,8 @@ export class MapRepository {
   async reverseGeocode(point: GeoPoint): Promise<ReverseGeocodeResult> {
     this.logger.debug(`Request: ${point.latitude},${point.longitude}`);
 
+    const { language = 'en' } = point;
+
     const response = await this.db
       .selectFrom('geodata_places')
       .selectAll()
@@ -165,11 +168,11 @@ export class MapRepository {
     if (response) {
       this.logger.verboseFn(() => `Raw: ${JSON.stringify(response, null, 2)}`);
 
-      const { countryCode, name: city, admin1Name } = response;
-      const country = getName(countryCode, 'en') ?? null;
+      const { countryCode, name: city, admin1Name, alternateNames } = response;
+      const country = getName(countryCode, language) ?? null;
       const state = admin1Name;
 
-      return { country, state, city };
+      return { country, state, city: MapRepository.getLocalizedName(city, alternateNames) };
     }
 
     this.logger.log(
@@ -194,11 +197,33 @@ export class MapRepository {
     this.logger.verboseFn(() => `Raw: ${JSON.stringify(ne_response, ['id', 'admin', 'admin_a3', 'type'], 2)}`);
 
     const { admin_a3 } = ne_response;
-    const country = getName(admin_a3, 'en') ?? null;
+    const country = getName(admin_a3, language) ?? null;
     const state = null;
     const city = null;
 
     return { country, state, city };
+  }
+
+  /**
+   * Extract a localized (native-script) name from the geonames alternateNames field.
+   * geonames cities500 stores the default name in ASCII/Pinyin for non-English locales
+   * (e.g. "Beijing" instead of "北京"). The alternateNames field contains
+   * comma-separated variants including the native script name.
+   *
+   * This method picks the first entry that contains non-ASCII characters,
+   * falling back to the default ASCII name if none is found.
+   */
+  static getLocalizedName(defaultName: string, alternateNames: string | null): string {
+    if (!alternateNames) {
+      return defaultName;
+    }
+
+    const nativeEntry = alternateNames
+      .split(',')
+      .map((e) => e.trim())
+      .find((e) => e.length > 0 && /[^\x00-\x7F]/.test(e));
+
+    return nativeEntry ?? defaultName;
   }
 
   private async importNaturalEarthCountries() {

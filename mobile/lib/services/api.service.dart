@@ -9,6 +9,7 @@ import 'package:immich_mobile/infrastructure/repositories/network.repository.dar
 import 'package:immich_mobile/infrastructure/repositories/settings.repository.dart';
 import 'package:immich_mobile/utils/debug_print.dart';
 import 'package:immich_mobile/utils/url_helper.dart';
+import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:openapi/api.dart';
 
@@ -41,6 +42,7 @@ class ApiService {
     // The below line ensures that the api clients are initialized when the service is instantiated
     // This is required to avoid late initialization errors when the clients are access before the endpoint is resolved
     setEndpoint('');
+    _setLocaleHeader();
     final endpoint = Store.tryGet(StoreKey.serverEndpoint);
     if (endpoint != null && endpoint.isNotEmpty) {
       setEndpoint(endpoint);
@@ -168,6 +170,13 @@ class ApiService {
     } else {
       authenticationApi.apiClient.addDefaultHeader('deviceModel', 'Unknown');
       authenticationApi.apiClient.addDefaultHeader('deviceType', 'Unknown');
+    }
+  }
+
+  void _setLocaleHeader() {
+    final locale = Intl.defaultLocale;
+    if (locale != null && locale.isNotEmpty) {
+      _apiClient.addDefaultHeader('Accept-Language', locale);
     }
   }
 

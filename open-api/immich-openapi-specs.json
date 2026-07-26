@@ -7096,6 +7096,15 @@
               "format": "double",
               "type": "number"
             }
+          },
+          {
+            "name": "language",
+            "required": false,
+            "in": "query",
+            "description": "Language code (e.g., en, zh) for localized names",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

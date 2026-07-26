@@ -4967,16 +4967,18 @@ export function getMapMarkers({ fileCreatedAfter, fileCreatedBefore, isArchived,
 /**
  * Reverse geocode coordinates
  */
-export function reverseGeocode({ lat, lon }: {
+export function reverseGeocode({ lat, lon, language }: {
     lat: number;
     lon: number;
+    language?: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: MapReverseGeocodeResponseDto[];
     }>(`/map/reverse-geocode${QS.query(QS.explode({
         lat,
-        lon
+        lon,
+        language
     }))}`, {
         ...opts
     }));
