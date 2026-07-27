@@ -530,7 +530,11 @@ export class MetadataService extends BaseService {
       return JobStatus.Skipped;
     }
 
-    await this.metadataRepository.writeTags(sidecarPath, exif);
+    const success = await this.metadataRepository.writeTags(sidecarPath, exif);
+
+    if (!success) {
+      return JobStatus.Failed;
+    }
 
     if (asset.files.length === 0) {
       await this.assetRepository.upsertFile({ assetId: id, type: AssetFileType.Sidecar, path: sidecarPath });
